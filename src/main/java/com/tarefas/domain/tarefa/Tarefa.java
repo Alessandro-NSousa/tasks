@@ -1,6 +1,7 @@
 package com.tarefas.domain.tarefa;
 
 import com.tarefas.domain.colaborador.Colaborador;
+import com.tarefas.domain.enumeration.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,4 +26,7 @@ public class Tarefa {
     @ManyToOne
     @JoinColumn(name = "colaborador_id")
     private Colaborador colaborador;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
 }

@@ -1,0 +1,2 @@
+ALTER TABLE tarefa
+ADD COLUMN status VARCHAR(100);

@@ -1,6 +1,7 @@
 package com.tarefas.services;
 
 import com.tarefas.domain.colaborador.Colaborador;
+import com.tarefas.domain.enumeration.Status;
 import com.tarefas.domain.tarefa.Tarefa;
 import com.tarefas.repository.ColaboradorRepository;
 import com.tarefas.repository.TarefaRepository;
@@ -23,6 +24,12 @@ public class TarefaService {
         Tarefa tarefa = new Tarefa();
         tarefa.setTitulo(data.getTitulo());
         tarefa.setDescricao(data.getDescricao());
+
+        if (data.getStatus() != null) {
+            tarefa.setStatus(data.getStatus());
+        } else {
+            tarefa.setStatus(Status.PENDENTE);
+        }
 
         Colaborador colaborador = colaboradorRepository.findById(data.getColaborador().getId())
                 .orElseThrow(() -> new RuntimeException("Colaborador não encontrado"));
