@@ -23,10 +23,10 @@ public class Tarefa {
     private String titulo;
     private String descricao;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     @ManyToOne
     @JoinColumn(name = "colaborador_id")
     private Colaborador colaborador;
-
-    @Enumerated(EnumType.STRING)
-    private Status status;
 }
