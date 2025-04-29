@@ -8,6 +8,7 @@ import com.tarefas.repository.TarefaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,6 +25,7 @@ public class TarefaService {
         Tarefa tarefa = new Tarefa();
         tarefa.setTitulo(data.getTitulo());
         tarefa.setDescricao(data.getDescricao());
+        tarefa.setCriacao(LocalDateTime.now());
 
         if (data.getStatus() != null) {
             tarefa.setStatus(data.getStatus());

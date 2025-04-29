@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 @Table(name = "tarefa")
 @Entity
@@ -25,6 +26,8 @@ public class Tarefa {
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    private LocalDateTime criacao;
 
     @ManyToOne
     @JoinColumn(name = "colaborador_id")
