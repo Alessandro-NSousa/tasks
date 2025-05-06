@@ -1,7 +1,7 @@
 package com.tarefas.controller;
 
 import com.tarefas.domain.tarefa.Tarefa;
-import com.tarefas.domain.tarefa.TarefaResponseDTO;
+import com.tarefas.dto.TarefaResponseDTO;
 import com.tarefas.services.TarefaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
