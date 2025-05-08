@@ -6,6 +6,7 @@ import com.tarefas.dto.RegisterRequestDTO;
 import com.tarefas.dto.ResponseDTO;
 import com.tarefas.infra.security.TokenService;
 import com.tarefas.repository.UserRepository;
+import com.tarefas.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,29 +27,27 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private TokenService tokenService;
+    @Autowired
+    private UserService userService;
+
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LoginRequestDTO body){
-        User user = this.repository.findByEmail(body.email()).orElseThrow(() -> new RuntimeException("User not found"));
-        if(passwordEncoder.matches(body.password(), user.getPassword())) {
-            String token = this.tokenService.generateToken(user);
-            return ResponseEntity.ok(new ResponseDTO(user.getEmail(), token));
+    public ResponseEntity<ResponseDTO> login(@RequestBody LoginRequestDTO body) {
+        try {
+            ResponseDTO response = userService.login(body);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(new ResponseDTO(e.getMessage(), null));
         }
-        return ResponseEntity.badRequest().build();
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody RegisterRequestDTO body){
-        Optional<User> user = this.repository.findByEmail(body.email());
+    public ResponseEntity<ResponseDTO> register(@RequestBody RegisterRequestDTO body){
 
-        if(user.isEmpty()) {
-            User newUser = new User();
-            newUser.setPassword(passwordEncoder.encode(body.password()));
-            newUser.setEmail(body.email());
-            this.repository.save(newUser);
-
-            String token = this.tokenService.generateToken(newUser);
-            return ResponseEntity.ok(new ResponseDTO(newUser.getEmail(), token));
+        try {
+            ResponseDTO response = userService.register(body);
+            return ResponseEntity.ok(response);
+        }catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(new ResponseDTO(e.getMessage(), null));
         }
-        return ResponseEntity.badRequest().build();
     }
 }
