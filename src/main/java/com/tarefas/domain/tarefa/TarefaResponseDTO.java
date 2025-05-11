@@ -1,6 +1,7 @@
-package com.tarefas.domain.tarefa;
+package com.tarefas.dto;
 
 import com.tarefas.domain.enumeration.Status;
+import com.tarefas.domain.tarefa.Tarefa;
 
 import java.time.LocalDateTime;
 import java.util.Date;
