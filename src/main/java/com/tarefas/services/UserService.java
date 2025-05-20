@@ -9,9 +9,12 @@ import com.tarefas.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -28,13 +31,25 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+//    public ResponseLoginDTO login2(LoginRequestDTO body) {
+//        UserDetails user = userRepository.findByEmail(body.email());
+//
+//        if (!passwordEncoder.matches(body.password(), user.getPassword())) {
+//            throw new RuntimeException();
+//        }
+//
+//        String token = tokenService.generateToken(user);
+//        return new ResponseLoginDTO(user.getUsername(), token);
+//    }
+
     public ResponseLoginDTO login(LoginRequestDTO body) {
+
         var usernamePassword = new UsernamePasswordAuthenticationToken(body.email(), body.password());
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
-
         var token = tokenService.generateToken((User) auth.getPrincipal());
-        return new ResponseLoginDTO(auth.getName(), token);
+
+        return new  ResponseLoginDTO(auth.getName(), token);
     }
 
     public User register(RegisterRequestDTO body){
@@ -49,5 +64,10 @@ public class UserService {
         this.userRepository.save(newUser);
 
         return newUser;
+    }
+
+    public User detalharUser(UUID id) {
+        var usuario = this.userRepository.getReferenceById(id);
+        return usuario;
     }
 }
