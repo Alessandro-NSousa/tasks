@@ -24,9 +24,6 @@ import java.util.List;
 public class SecurityConfig {
 
     @Autowired
-    private CustomUserDatailService userDatailService;
-
-    @Autowired
     SecurityFilter securityFilter;
 
     @Bean
@@ -38,6 +35,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "api/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/tarefas").hasRole("ADMIN")
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);

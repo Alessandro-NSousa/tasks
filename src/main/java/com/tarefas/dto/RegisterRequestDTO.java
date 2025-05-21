@@ -1,4 +1,6 @@
 package com.tarefas.dto;
 
-public record RegisterRequestDTO(String email, String password) {
+import com.tarefas.domain.user.UserRole;
+
+public record RegisterRequestDTO(String email, String password, UserRole role) {
 }
