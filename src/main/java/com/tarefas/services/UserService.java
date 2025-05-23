@@ -52,14 +52,14 @@ public class UserService {
         return new  ResponseLoginDTO(auth.getName(), token);
     }
 
-    public User register(RegisterRequestDTO body){
+    public User register(RegisterRequestDTO dados){
 
-        if(this.userRepository.findByEmail(body.email()) != null) {
+        if(this.userRepository.findByEmail(dados.email()) != null) {
             throw new RuntimeException("E-mail já cadastrado.");
         }
 
-        String encryptedPassword = passwordEncoder.encode(body.password());
-        User newUser = new User(body.email(), encryptedPassword, body.role());
+        String encryptedPassword = passwordEncoder.encode(dados.password());
+        User newUser = new User(dados, encryptedPassword);
 
         this.userRepository.save(newUser);
 

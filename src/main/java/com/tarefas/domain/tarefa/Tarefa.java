@@ -2,6 +2,7 @@ package com.tarefas.domain.tarefa;
 
 import com.tarefas.domain.colaborador.Colaborador;
 import com.tarefas.domain.enumeration.Status;
+import com.tarefas.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,6 +31,6 @@ public class Tarefa {
     private LocalDateTime criacao;
 
     @ManyToOne
-    @JoinColumn(name = "colaborador_id")
-    private Colaborador colaborador;
+    @JoinColumn(name = "usuario_id")
+    private User usuario;
 }

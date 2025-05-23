@@ -3,8 +3,10 @@ package com.tarefas.services;
 import com.tarefas.domain.colaborador.Colaborador;
 import com.tarefas.domain.enumeration.Status;
 import com.tarefas.domain.tarefa.Tarefa;
+import com.tarefas.domain.user.User;
 import com.tarefas.repository.ColaboradorRepository;
 import com.tarefas.repository.TarefaRepository;
+import com.tarefas.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,8 @@ public class TarefaService {
     private TarefaRepository repository;
     @Autowired
     private ColaboradorRepository colaboradorRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public Tarefa createTask(Tarefa data) {
 
@@ -33,10 +37,10 @@ public class TarefaService {
             tarefa.setStatus(Status.PENDENTE);
         }
 
-        Colaborador colaborador = colaboradorRepository.findById(data.getColaborador().getId())
+        User usuario = userRepository.findById(data.getUsuario().getId())
                 .orElseThrow(() -> new RuntimeException("Colaborador não encontrado"));
 
-        tarefa.setColaborador(colaborador);
+        tarefa.setUsuario(usuario);
 
         var newTask = repository.save(tarefa);
 
