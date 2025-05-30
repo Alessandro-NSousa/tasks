@@ -4,5 +4,5 @@ import com.tarefas.domain.user.UserRole;
 
 import java.util.UUID;
 
-public record ResponseRegisterDTO(UUID id, String username, UserRole role) {
+public record RegisterResponseDTO(UUID id, String username, UserRole role) {
 }

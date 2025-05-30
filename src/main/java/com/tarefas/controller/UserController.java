@@ -23,16 +23,16 @@ public class UserController {
             User usuario = userService.register(registerRequest);
             var uri = uriBuilder.path("/api/auth/{id}").buildAndExpand(usuario.getId()).toUri();
 
-            return ResponseEntity.created(uri).body(new ResponseRegisterDTO(usuario.getId(), usuario.getUsername(), usuario.getRole()));
+            return ResponseEntity.created(uri).body(new RegisterResponseDTO(usuario.getId(), usuario.getUsername(), usuario.getRole()));
         }catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(new ResponseErroDTO(e.getMessage()));
+            return ResponseEntity.badRequest().body(new ErroResponseDTO(e.getMessage()));
         }
     }
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequestDTO body) {
 
-        ResponseLoginDTO response = userService.login(body);
+        LoginResponseDTO response = userService.login(body);
         return ResponseEntity.ok(response);
     }
 
@@ -40,7 +40,7 @@ public class UserController {
     public ResponseEntity detalhar(@PathVariable UUID id) {
         var user = userService.detalharUser(id);
 
-        return ResponseEntity.ok(new ResponseRegisterDTO(user.getId(), user.getUsername(), user.getRole()));
+        return ResponseEntity.ok(new RegisterResponseDTO(user.getId(), user.getUsername(), user.getRole()));
     }
 
 

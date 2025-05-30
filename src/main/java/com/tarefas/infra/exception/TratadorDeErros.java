@@ -1,11 +1,14 @@
 package com.tarefas.infra.exception;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -57,6 +60,21 @@ public class TratadorDeErros {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity tratarErroNotFound() {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Erro: Identificador não Encontrado!" );
+    }
+
+    @ExceptionHandler(JWTVerificationException.class)
+    public ResponseEntity tratarErroToken() {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erro: Falha na verificação do token" );
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity tratarErroTokenExpirado() {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erro: token expirado" );
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity tratarErroUsuarioDesabilitado() {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erro: Usuário Desabilitado" );
     }
 
     private record DadosErroValidacao(String campo, String mensagem) {

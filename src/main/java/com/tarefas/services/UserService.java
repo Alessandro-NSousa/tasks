@@ -3,14 +3,12 @@ package com.tarefas.services;
 import com.tarefas.domain.user.User;
 import com.tarefas.dto.LoginRequestDTO;
 import com.tarefas.dto.RegisterRequestDTO;
-import com.tarefas.dto.ResponseLoginDTO;
+import com.tarefas.dto.LoginResponseDTO;
 import com.tarefas.infra.security.TokenService;
 import com.tarefas.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -42,14 +40,14 @@ public class UserService {
 //        return new ResponseLoginDTO(user.getUsername(), token);
 //    }
 
-    public ResponseLoginDTO login(LoginRequestDTO body) {
+    public LoginResponseDTO login(LoginRequestDTO body) {
 
         var usernamePassword = new UsernamePasswordAuthenticationToken(body.email(), body.password());
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
         var token = tokenService.generateToken((User) auth.getPrincipal());
 
-        return new  ResponseLoginDTO(auth.getName(), token);
+        return new LoginResponseDTO(auth.getName(), token);
     }
 
     public User register(RegisterRequestDTO dados){

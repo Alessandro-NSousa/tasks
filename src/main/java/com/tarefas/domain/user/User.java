@@ -27,6 +27,7 @@ public class User  implements UserDetails {
     private String email;
     private String password;
     private UserRole role;
+    private Boolean ativo;
 
     public User(String nome, String login, String password, UserRole role){
         this.nome = nome;
@@ -69,6 +70,6 @@ public class User  implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.ativo;
     }
 }

@@ -1,6 +1,5 @@
 package com.tarefas.domain.tarefa;
 
-import com.tarefas.domain.colaborador.Colaborador;
 import com.tarefas.domain.enumeration.Status;
 import com.tarefas.domain.user.User;
 import jakarta.persistence.*;
