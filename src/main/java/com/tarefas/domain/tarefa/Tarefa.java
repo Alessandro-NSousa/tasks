@@ -28,8 +28,11 @@ public class Tarefa {
     private Status status;
 
     private LocalDateTime criacao;
+    @Column(name = "ultima_alteracao")
+    private LocalDateTime ultimaAlteracao;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private User usuario;
+
 }
