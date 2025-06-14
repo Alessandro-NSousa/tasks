@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -59,6 +60,14 @@ public class TarefaService {
         Tarefa tarefa = repository.findById(taskId).orElseThrow(() -> new IllegalArgumentException("Task not found"));
 
         return tarefa;
+    }
+
+    public Page<TarefaResponseDTO> getByUser(UUID userId, Pageable pageable) {
+
+        var user = userRepository.findById(userId);
+        var tasks = repository.findAllByUsuario(user, pageable).map(TarefaResponseDTO::new);
+
+        return tasks;
     }
 
     public Tarefa atualizarTarefa(TarefaPutRequestDTO dados) {

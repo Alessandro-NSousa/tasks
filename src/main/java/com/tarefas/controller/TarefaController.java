@@ -13,8 +13,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/tarefas")
@@ -23,11 +26,12 @@ public class TarefaController {
     private TarefaService tarefaService;
 
     @PostMapping
-    public ResponseEntity createTask(@RequestBody TarefaRequestDTO data) {
+    public ResponseEntity createTask(@RequestBody TarefaRequestDTO data, UriComponentsBuilder uriBuilder) {
 
         Tarefa newTarefa = this.tarefaService.createTask(data);
+        var uri = uriBuilder.path("/api/tarefas/{idTask}").buildAndExpand(newTarefa.getId()).toUri();
 
-        return ResponseEntity.ok( new TarefaResponseDTO(newTarefa));
+        return ResponseEntity.created(uri).body(new TarefaResponseDTO(newTarefa));
 
     }
 
@@ -42,7 +46,13 @@ public class TarefaController {
 
         var task = this.tarefaService.getByTask(idTask);
 
-        return ResponseEntity.ok(task);
+        return ResponseEntity.ok(new TarefaResponseDTO(task));
+    }
+
+    @GetMapping("user/{user_id}")
+    public Page<TarefaResponseDTO> getUser(@PathVariable UUID user_id, @PageableDefault(sort = {"status"}) Pageable paginacao){
+
+        return this.tarefaService.getByUser(user_id, paginacao);
     }
 
     @PutMapping

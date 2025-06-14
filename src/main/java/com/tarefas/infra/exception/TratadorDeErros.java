@@ -3,6 +3,7 @@ package com.tarefas.infra.exception;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -75,6 +76,11 @@ public class TratadorDeErros {
     @ExceptionHandler(DisabledException.class)
     public ResponseEntity tratarErroUsuarioDesabilitado() {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erro: Usuário Desabilitado" );
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity tratarErroDadosInvalidos(DataIntegrityViolationException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
     private record DadosErroValidacao(String campo, String mensagem) {
