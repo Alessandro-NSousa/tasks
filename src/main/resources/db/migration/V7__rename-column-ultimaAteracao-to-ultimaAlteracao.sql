@@ -1,0 +1,1 @@
+ALTER TABLE tarefa RENAME COLUMN ultimaateracao TO ultima_alteracao;
