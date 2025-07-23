@@ -53,20 +53,18 @@ public class TarefaService {
         logService.RegistrarLog(log);
 
         return newTask;
-
     }
 
     public Page<TarefaResponseDTO> getAllTasks(Pageable pageable) {
 
         return repository.findAll(pageable).map(mapper::TarefaToTarefaResponseDTO);
-
     }
 
-    public Tarefa getByTask(UUID taskId) {
+    public TarefaResponseDTO getByTask(UUID taskId) {
 
         Tarefa tarefa = repository.findById(taskId).orElseThrow(() -> new IllegalArgumentException("Task not found"));
 
-        return tarefa;
+        return mapper.TarefaToTarefaResponseDTO(tarefa);
     }
 
     public Page<TarefaResponseDTO> getByUser(UUID userId, Pageable pageable) {
