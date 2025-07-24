@@ -4,7 +4,9 @@ import com.tarefas.domain.user.User;
 import com.tarefas.dto.LoginRequestDTO;
 import com.tarefas.dto.RegisterRequestDTO;
 import com.tarefas.dto.LoginResponseDTO;
+import com.tarefas.dto.UserResponseDTO;
 import com.tarefas.infra.security.TokenService;
+import com.tarefas.mapper.UserMapper;
 import com.tarefas.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +27,8 @@ public class UserService {
     private AuthenticationManager authenticationManager;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserMapper mapper;
     private final PasswordEncoder passwordEncoder;
 
     public UserService(PasswordEncoder passwordEncoder) {
@@ -55,9 +59,9 @@ public class UserService {
         return newUser;
     }
 
-    public User detalharUser(UUID id) {
+    public UserResponseDTO detalharUser(UUID id) {
         var usuario = this.userRepository.getReferenceById(id);
-        return usuario;
+        return mapper.UserToUserResponseDTO(usuario);
     }
 
     public User getUsuarioLogado() {
