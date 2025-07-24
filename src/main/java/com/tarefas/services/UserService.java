@@ -4,11 +4,15 @@ import com.tarefas.domain.user.User;
 import com.tarefas.dto.LoginRequestDTO;
 import com.tarefas.dto.RegisterRequestDTO;
 import com.tarefas.dto.LoginResponseDTO;
+import com.tarefas.dto.UserResponseDTO;
 import com.tarefas.infra.security.TokenService;
+import com.tarefas.mapper.UserMapper;
 import com.tarefas.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,22 +27,13 @@ public class UserService {
     private AuthenticationManager authenticationManager;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserMapper mapper;
     private final PasswordEncoder passwordEncoder;
 
     public UserService(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
-
-//    public ResponseLoginDTO login2(LoginRequestDTO body) {
-//        UserDetails user = userRepository.findByEmail(body.email());
-//
-//        if (!passwordEncoder.matches(body.password(), user.getPassword())) {
-//            throw new RuntimeException();
-//        }
-//
-//        String token = tokenService.generateToken(user);
-//        return new ResponseLoginDTO(user.getUsername(), token);
-//    }
 
     public LoginResponseDTO login(LoginRequestDTO body) {
 
@@ -64,8 +59,18 @@ public class UserService {
         return newUser;
     }
 
-    public User detalharUser(UUID id) {
+    public UserResponseDTO detalharUser(UUID id) {
         var usuario = this.userRepository.getReferenceById(id);
-        return usuario;
+        return mapper.UserToUserResponseDTO(usuario);
+    }
+
+    public User getUsuarioLogado() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String usernameLogado = authentication.getName();
+
+        // Buscar o usuário logado no banco (se necessário)
+        User usuarioLogado = userRepository.findByEmail(usernameLogado);
+
+        return usuarioLogado;
     }
 }

@@ -1,0 +1,1 @@
+ALTER TABLE tarefa ADD COLUMN ultimaAteracao date;

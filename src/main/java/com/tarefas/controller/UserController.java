@@ -40,7 +40,7 @@ public class UserController {
     public ResponseEntity detalhar(@PathVariable UUID id) {
         var user = userService.detalharUser(id);
 
-        return ResponseEntity.ok(new RegisterResponseDTO(user.getId(), user.getUsername(), user.getRole()));
+        return ResponseEntity.ok(user);
     }
 
 

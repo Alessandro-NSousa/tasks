@@ -3,9 +3,11 @@ package com.tarefas.services;
 import com.tarefas.domain.enumeration.Status;
 import com.tarefas.domain.tarefa.Tarefa;
 import com.tarefas.domain.user.User;
+import com.tarefas.dto.LogRequestDTO;
 import com.tarefas.dto.TarefaPutRequestDTO;
 import com.tarefas.dto.TarefaRequestDTO;
 import com.tarefas.dto.TarefaResponseDTO;
+import com.tarefas.mapper.TarefaMapper;
 import com.tarefas.repository.TarefaRepository;
 import com.tarefas.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,19 +26,18 @@ public class TarefaService {
     private TarefaRepository repository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private TarefaMapper mapper;
+    @Autowired
+    private LogService logService;
+    @Autowired
+    private UserService userService;
 
-    public Tarefa createTask(TarefaRequestDTO data) {
+    public TarefaResponseDTO createTask(TarefaRequestDTO data) {
 
-        Tarefa tarefa = new Tarefa();
-        tarefa.setTitulo(data.titulo());
-        tarefa.setDescricao(data.descricao());
-        tarefa.setCriacao(LocalDateTime.now());
+        var usuarioLogado = userService.getUsuarioLogado();
 
-        if (data.status() != null) {
-            tarefa.setStatus(data.status());
-        } else {
-            tarefa.setStatus(Status.PENDENTE);
-        }
+        Tarefa tarefa = mapper.tarefaRequestDTOToTarefa(data);
 
         User usuario = userRepository.findById(data.colaborador().getId())
                 .orElseThrow(() -> new RuntimeException("Colaborador não encontrado"));
@@ -45,48 +46,40 @@ public class TarefaService {
 
         var newTask = repository.save(tarefa);
 
-        return newTask;
+        //cadastrar o log da tarefa
+        var log = new LogRequestDTO("O usuário " + usuarioLogado.getNome() + ", de Id: " + usuarioLogado.getId()
+                +", cadastrou uma nova tarefa para o usuário " + usuario.getNome()
+                , Tarefa.class.getSimpleName(),usuarioLogado.getId());
+        logService.RegistrarLog(log);
 
+        return mapper.TarefaToTarefaResponseDTO(newTask);
     }
 
     public Page<TarefaResponseDTO> getAllTasks(Pageable pageable) {
 
-        return repository.findAll(pageable).map(TarefaResponseDTO::new);
-
+        return repository.findAll(pageable).map(mapper::TarefaToTarefaResponseDTO);
     }
 
-    public Tarefa getByTask(UUID taskId) {
+    public TarefaResponseDTO getByTask(UUID taskId) {
 
         Tarefa tarefa = repository.findById(taskId).orElseThrow(() -> new IllegalArgumentException("Task not found"));
 
-        return tarefa;
+        return mapper.TarefaToTarefaResponseDTO(tarefa);
     }
 
     public Page<TarefaResponseDTO> getByUser(UUID userId, Pageable pageable) {
 
         var user = userRepository.findById(userId);
-        var tasks = repository.findAllByUsuario(user, pageable).map(TarefaResponseDTO::new);
 
-        return tasks;
+        return repository.findAll(pageable).map(mapper::TarefaToTarefaResponseDTO);
     }
 
     public Tarefa atualizarTarefa(TarefaPutRequestDTO dados) {
-        var tarefa = repository.getReferenceById(dados.id());
+        var tarefa = repository.findById(dados.id())
+                .orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
 
-        if (dados.titulo() !=null)
-            tarefa.setTitulo(dados.titulo());
+        mapper.updateTarefaFromDTO(dados, tarefa, userRepository);
 
-        if (dados.descricao() !=null)
-            tarefa.setDescricao(dados.descricao());
-
-        if (dados.status()!=null)
-            tarefa.setStatus(dados.status());
-
-        if (dados.colaborador()!=null) {
-            User user = userRepository.getReferenceById(dados.colaborador().getId());
-            tarefa.setUsuario(user);
-        }
-
-        return tarefa;
+        return repository.save(tarefa);
     }
 }

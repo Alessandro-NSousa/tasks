@@ -28,10 +28,10 @@ public class TarefaController {
     @PostMapping
     public ResponseEntity createTask(@RequestBody TarefaRequestDTO data, UriComponentsBuilder uriBuilder) {
 
-        Tarefa newTarefa = this.tarefaService.createTask(data);
-        var uri = uriBuilder.path("/api/tarefas/{idTask}").buildAndExpand(newTarefa.getId()).toUri();
+        var newTarefa = this.tarefaService.createTask(data);
+        var uri = uriBuilder.path("/api/tarefas/{idTask}").buildAndExpand(newTarefa.id()).toUri();
 
-        return ResponseEntity.created(uri).body(new TarefaResponseDTO(newTarefa));
+        return ResponseEntity.created(uri).body(newTarefa);
 
     }
 
@@ -46,7 +46,7 @@ public class TarefaController {
 
         var task = this.tarefaService.getByTask(idTask);
 
-        return ResponseEntity.ok(new TarefaResponseDTO(task));
+        return ResponseEntity.ok(task);
     }
 
     @GetMapping("user/{user_id}")
