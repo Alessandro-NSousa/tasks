@@ -28,8 +28,8 @@ public class TarefaController {
     @PostMapping
     public ResponseEntity createTask(@RequestBody TarefaRequestDTO data, UriComponentsBuilder uriBuilder) {
 
-        Tarefa newTarefa = this.tarefaService.createTask(data);
-        var uri = uriBuilder.path("/api/tarefas/{idTask}").buildAndExpand(newTarefa.getId()).toUri();
+        var newTarefa = this.tarefaService.createTask(data);
+        var uri = uriBuilder.path("/api/tarefas/{idTask}").buildAndExpand(newTarefa.id()).toUri();
 
         return ResponseEntity.created(uri).body(newTarefa);
 

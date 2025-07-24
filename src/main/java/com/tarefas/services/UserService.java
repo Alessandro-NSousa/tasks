@@ -31,17 +31,6 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-//    public ResponseLoginDTO login2(LoginRequestDTO body) {
-//        UserDetails user = userRepository.findByEmail(body.email());
-//
-//        if (!passwordEncoder.matches(body.password(), user.getPassword())) {
-//            throw new RuntimeException();
-//        }
-//
-//        String token = tokenService.generateToken(user);
-//        return new ResponseLoginDTO(user.getUsername(), token);
-//    }
-
     public LoginResponseDTO login(LoginRequestDTO body) {
 
         var usernamePassword = new UsernamePasswordAuthenticationToken(body.email(), body.password());

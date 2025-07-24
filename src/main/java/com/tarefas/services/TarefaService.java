@@ -33,7 +33,7 @@ public class TarefaService {
     @Autowired
     private UserService userService;
 
-    public Tarefa createTask(TarefaRequestDTO data) {
+    public TarefaResponseDTO createTask(TarefaRequestDTO data) {
 
         var usuarioLogado = userService.getUsuarioLogado();
 
@@ -52,7 +52,7 @@ public class TarefaService {
                 , Tarefa.class.getSimpleName(),usuarioLogado.getId());
         logService.RegistrarLog(log);
 
-        return newTask;
+        return mapper.TarefaToTarefaResponseDTO(newTask);
     }
 
     public Page<TarefaResponseDTO> getAllTasks(Pageable pageable) {
@@ -70,8 +70,6 @@ public class TarefaService {
     public Page<TarefaResponseDTO> getByUser(UUID userId, Pageable pageable) {
 
         var user = userRepository.findById(userId);
-
-//        var tasks = repository.findAllByUsuario(user, pageable).map(TarefaResponseDTO::new);
 
         return repository.findAll(pageable).map(mapper::TarefaToTarefaResponseDTO);
     }
