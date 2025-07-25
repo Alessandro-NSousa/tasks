@@ -10,6 +10,7 @@ import com.tarefas.dto.TarefaResponseDTO;
 import com.tarefas.mapper.TarefaMapper;
 import com.tarefas.repository.TarefaRepository;
 import com.tarefas.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,17 +21,18 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class TarefaService {
 
-    @Autowired
+
     private TarefaRepository repository;
-    @Autowired
+
     private UserRepository userRepository;
-    @Autowired
+
     private TarefaMapper mapper;
-    @Autowired
+
     private LogService logService;
-    @Autowired
+
     private UserService userService;
 
     public TarefaResponseDTO createTask(TarefaRequestDTO data) {
