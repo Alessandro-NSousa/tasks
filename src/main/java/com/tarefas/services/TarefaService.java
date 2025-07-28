@@ -73,7 +73,7 @@ public class TarefaService {
 
         var user = userRepository.findById(userId);
 
-        return repository.findAll(pageable).map(mapper::TarefaToTarefaResponseDTO);
+        return repository.findAllByUsuario(user,pageable).map(mapper::TarefaToTarefaResponseDTO);
     }
 
     public Tarefa atualizarTarefa(TarefaPutRequestDTO dados) {
