@@ -59,7 +59,7 @@ class TarefaServiceTest {
     @Test
     void whenTaskInformedThenItShouldBeCreated() {
         // dados
-        var expectedtaskDTO = TarefaDTOBuilder.builder().build().toTarefa();
+        var expectedtaskDTO = TarefaDTOBuilder.builder().build().buildRequestDTO();
         var expectedTarefa = tarefaMapper.tarefaRequestDTOToTarefa(expectedtaskDTO);
 
         UUID userId = UUID.randomUUID();

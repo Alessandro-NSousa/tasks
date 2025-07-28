@@ -32,7 +32,7 @@ public class TarefaDTOBuilder {
     @Builder.Default
     private User usuario = UserDTOBuilder.builder().build().toUser();
 
-    public TarefaRequestDTO toTarefa() {
+    public TarefaRequestDTO buildRequestDTO() {
 
         return new TarefaRequestDTO(titulo,descricao,status,usuario);
     }

@@ -4,6 +4,8 @@ import com.tarefas.domain.user.User;
 import com.tarefas.domain.user.UserRole;
 import lombok.Builder;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
 
 @Builder
