@@ -5,5 +5,9 @@ import com.tarefas.domain.user.User;
 
 import java.util.UUID;
 
-public record TarefaPutRequestDTO(UUID id, String titulo, String descricao, Status status, User colaborador) {
+public record TarefaPutRequestDTO(
+        String titulo,
+        String descricao,
+        Status status,
+        UUID colaboradorId) {
 }

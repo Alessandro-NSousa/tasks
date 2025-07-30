@@ -34,7 +34,7 @@ public class TarefaDTOBuilder {
 
     public TarefaRequestDTO buildRequestDTO() {
 
-        return new TarefaRequestDTO(titulo,descricao,status,usuario);
+        return new TarefaRequestDTO(titulo,descricao,status,usuario.getId());
     }
 
 }

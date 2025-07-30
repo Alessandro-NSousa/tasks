@@ -63,7 +63,7 @@ class TarefaServiceTest {
         var expectedTarefa = tarefaMapper.tarefaRequestDTOToTarefa(expectedtaskDTO);
 
         UUID userId = UUID.randomUUID();
-        UUID colaboradorId = expectedtaskDTO.colaborador().getId(); // se vier do builder
+        UUID colaboradorId = expectedtaskDTO.colaboradorId(); // se vier do builder
 
         var usuarioLogado = new User();
         usuarioLogado.setId(userId);

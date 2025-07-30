@@ -85,7 +85,7 @@ class TarefaControllerTest {
         // given
         var tarefaRequestDTO = TarefaDTOBuilder.builder().build().buildRequestDTO(); // entrada da requisição
         var tarefaDomain = tarefaMapper.tarefaRequestDTOToTarefa(tarefaRequestDTO); // converte para entidade
-        var tarefaResponseDTO = tarefaMapper.TarefaToTarefaResponseDTO(tarefaDomain); // resultado esperado
+        var tarefaResponseDTO = tarefaMapper.tarefaToTarefaResponseDTO(tarefaDomain); // resultado esperado
 
         // when
         when(tarefaService.createTask(any(TarefaRequestDTO.class))).thenReturn(tarefaResponseDTO);

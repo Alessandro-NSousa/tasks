@@ -6,8 +6,11 @@ import com.tarefas.domain.enumeration.Status;
 import com.tarefas.dto.TarefaPutRequestDTO;
 import com.tarefas.dto.TarefaRequestDTO;
 import com.tarefas.dto.TarefaResponseDTO;
+import com.tarefas.dto.TarefaResponsePutDTO;
 import com.tarefas.repository.UserRepository;
 import org.mapstruct.*;
+
+import java.util.UUID;
 
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR,
@@ -15,21 +18,30 @@ nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface TarefaMapper {
 
     @Mapping(target = "colaborador", source = "usuario.nome")
-    TarefaResponseDTO TarefaToTarefaResponseDTO(Tarefa tarefa);
+    TarefaResponseDTO tarefaToTarefaResponseDTO(Tarefa tarefa);
 
+    //target = alvo - source = fonte
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "criacao", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "ultimaAlteracao", ignore = true)
     @Mapping(target = "status", source = "status", qualifiedByName = "mapStatus")
-    @Mapping(target = "usuario", source = "colaborador")
+    @Mapping(target = "usuario.id", source = "colaboradorId")
     Tarefa tarefaRequestDTOToTarefa(TarefaRequestDTO requestDTO);
+
+
+
+
+
+    @Mapping(target = "colaborador", source = "usuario.nome")
+    TarefaResponsePutDTO tarefaToTarefaResponsePutDTO(Tarefa tarefa);
+
 
     // update
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "criacao", ignore = true)
     @Mapping(target = "ultimaAlteracao", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "status", source = "status", qualifiedByName = "mapStatus")
-    @Mapping(target = "usuario", expression = "java(updateUser(dto.colaborador(), tarefa, userRepository))")
+    @Mapping(target = "usuario", expression = "java(buscarUsuario(dto.colaboradorId(), tarefa, userRepository))")
     void updateTarefaFromDTO(TarefaPutRequestDTO dto,
                              @MappingTarget Tarefa tarefa,
                              @Context UserRepository userRepository);
@@ -40,17 +52,18 @@ public interface TarefaMapper {
         return status != null ? status : Status.PENDENTE;
     }
 
-    default User updateUser(User colaborador,
-                            Tarefa tarefa,
-                            UserRepository userRepository) {
-        if (colaborador == null) {
+    default User buscarUsuario(UUID colaboradorId,
+                               Tarefa tarefa,
+                               UserRepository userRepository) {
+        if (colaboradorId == null) {
             return tarefa.getUsuario();
         }
         if (tarefa.getUsuario() != null &&
-                tarefa.getUsuario().getId().equals(colaborador.getId())) {
+                tarefa.getUsuario().getId().equals(colaboradorId)) {
             return tarefa.getUsuario();
         }
-        return userRepository.findById(colaborador.getId())
+
+        return userRepository.findById(colaboradorId)
                 .orElseThrow(() -> new RuntimeException("Colaborador não encontrado"));
     }
 
