@@ -1,8 +1,10 @@
 package com.tarefas.builder;
 
 import com.tarefas.domain.enumeration.Status;
+import com.tarefas.domain.tarefa.Tarefa;
 import com.tarefas.domain.user.User;
 import com.tarefas.dto.TarefaRequestDTO;
+import com.tarefas.dto.TarefaResponseDTO;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -33,8 +35,24 @@ public class TarefaDTOBuilder {
     private User usuario = UserDTOBuilder.builder().build().toUser();
 
     public TarefaRequestDTO buildRequestDTO() {
+        return new TarefaRequestDTO(titulo, descricao, status, usuario.getId());
+    }
 
-        return new TarefaRequestDTO(titulo,descricao,status,usuario.getId());
+    public TarefaResponseDTO buildResponseDTO() {
+
+        return new TarefaResponseDTO(id, titulo, descricao,status, criacao, usuario.getNome());
+    }
+
+    public Tarefa buildEntity() {
+        Tarefa tarefa = new Tarefa();
+        tarefa.setId(id);
+        tarefa.setTitulo(titulo);
+        tarefa.setDescricao(descricao);
+        tarefa.setStatus(status);
+        tarefa.setCriacao(criacao);
+        tarefa.setUltimaAlteracao(ultimaAlteracao);
+        tarefa.setUsuario(usuario);
+        return tarefa;
     }
 
 }

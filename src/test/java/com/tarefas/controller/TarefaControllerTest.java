@@ -1,7 +1,9 @@
 package com.tarefas.controller;
 
 import com.tarefas.builder.TarefaDTOBuilder;
+import com.tarefas.domain.enumeration.Status;
 import com.tarefas.dto.TarefaRequestDTO;
+import com.tarefas.dto.TarefaResponseDTO;
 import com.tarefas.mapper.TarefaMapper;
 import com.tarefas.services.TarefaService;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static com.tarefas.utils.JsonConvertionUtils.asJsonString;
@@ -80,25 +83,46 @@ class TarefaControllerTest {
 //                .andExpect(jsonPath("$.status", is(expectedTarefaDTO.status())));
 //    }
 
-    @Test
-    void whenPOSTIsCalledThenATaskIsCreated() throws Exception {
-        // given
-        var tarefaRequestDTO = TarefaDTOBuilder.builder().build().buildRequestDTO(); // entrada da requisição
-        var tarefaDomain = tarefaMapper.tarefaRequestDTOToTarefa(tarefaRequestDTO); // converte para entidade
-        var tarefaResponseDTO = tarefaMapper.tarefaToTarefaResponseDTO(tarefaDomain); // resultado esperado
+//    @Test
+//    void whenPOSTIsCalledThenATaskIsCreated() throws Exception {
+//        // given
+//        var tarefaRequestDTO = TarefaDTOBuilder.builder().build().buildRequestDTO(); // entrada da requisição
+//        var tarefaDomain = tarefaMapper.tarefaRequestDTOToTarefa(tarefaRequestDTO); // converte para entidade
+//        var tarefaResponseDTO = tarefaMapper.tarefaToTarefaResponseDTO(tarefaDomain); // resultado esperado
+//
+//        // when
+//        when(tarefaService.createTask(any(TarefaRequestDTO.class))).thenReturn(tarefaResponseDTO);
+//
+//        // then
+//        mockMvc.perform(post(TASK_API_URL_PATH)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(asJsonString(tarefaRequestDTO)))
+//                .andExpect(status().isCreated())
+//                .andExpect(jsonPath("$.titulo", is(tarefaResponseDTO.titulo())))
+//                .andExpect(jsonPath("$.descricao", is(tarefaResponseDTO.descricao())))
+//                .andExpect(jsonPath("$.status", is(tarefaResponseDTO.status())));
+//    }
+@Test
+void whenPOSTIsCalledThenATaskIsCreated() throws Exception {
+    // given
+    var builder = TarefaDTOBuilder.builder().build();
+    var requestDTO = builder.buildRequestDTO();
+    var responseDTO = builder.buildResponseDTO();
 
-        // when
-        when(tarefaService.createTask(any(TarefaRequestDTO.class))).thenReturn(tarefaResponseDTO);
+    // when
+    when(tarefaService.createTask(any(TarefaRequestDTO.class)))
+            .thenReturn(responseDTO);
 
-        // then
-        mockMvc.perform(post(TASK_API_URL_PATH)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(tarefaRequestDTO)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.titulo", is(tarefaResponseDTO.titulo())))
-                .andExpect(jsonPath("$.descricao", is(tarefaResponseDTO.descricao())))
-                .andExpect(jsonPath("$.status", is(tarefaResponseDTO.status())));
-    }
+    // then
+    mockMvc.perform(post("/api/tarefas")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(asJsonString(requestDTO)))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.titulo", is(responseDTO.titulo())))
+            .andExpect(jsonPath("$.descricao", is(responseDTO.descricao())))
+            .andExpect(jsonPath("$.status", is(responseDTO.status().toString())))
+            .andExpect(jsonPath("$.colaborador", is(responseDTO.colaborador())));
+}
 
 
 

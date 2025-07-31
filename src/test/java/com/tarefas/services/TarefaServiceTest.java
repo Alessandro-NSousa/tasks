@@ -1,6 +1,7 @@
 package com.tarefas.services;
 
 import com.tarefas.builder.TarefaDTOBuilder;
+import com.tarefas.builder.UserDTOBuilder;
 import com.tarefas.domain.tarefa.Tarefa;
 import com.tarefas.domain.user.User;
 import com.tarefas.dto.TarefaRequestDTO;
@@ -56,33 +57,67 @@ class TarefaServiceTest {
     }
 
     //quando a tarefa é informada, então ela deve ser criada
+//    @Test
+//    void whenTaskInformedThenItShouldBeCreated() {
+//        // dados
+//        var tarefaRequestDTO = TarefaDTOBuilder.builder().build().buildRequestDTO();
+//        var tarefa = tarefaMapper.tarefaRequestDTOToTarefa(tarefaRequestDTO);
+//
+//        UUID userId = UUID.randomUUID();
+//        UUID colaboradorId = tarefaRequestDTO.colaboradorId();
+//
+//        var usuarioLogado = new User();
+//        usuarioLogado.setId(userId);
+//        usuarioLogado.setNome("Usuário Logado");
+//
+//
+//        //quando
+//        when(userService.getUsuarioLogado()).thenReturn(usuarioLogado);
+//        when(userRepository.findById(colaboradorId)).thenReturn(Optional.of(tarefa.getUsuario()));
+//        when(tarefaRepository.save(any())).thenReturn(tarefa);
+//
+//        // então
+//        var response = tarefaService.createTask(tarefaRequestDTO);
+//
+//        assertThat(response.titulo(), is(equalTo(tarefaRequestDTO.titulo())));
+//        assertThat(response.descricao(), is(equalTo(tarefaRequestDTO.descricao())));
+//        assertThat(response.status(), is(equalTo(tarefaRequestDTO.status())));
+//        assertThat(response.colaborador(), is(equalTo(tarefaRequestDTO.colaboradorId())));
+//    }
+
     @Test
     void whenTaskInformedThenItShouldBeCreated() {
-        // dados
-        var expectedtaskDTO = TarefaDTOBuilder.builder().build().buildRequestDTO();
-        var expectedTarefa = tarefaMapper.tarefaRequestDTOToTarefa(expectedtaskDTO);
+        // Arrange
+        var colaborador = UserDTOBuilder.builder()
+                .nome("Colaborador da Tarefa")
+                .build()
+                .toUser();
 
-        UUID userId = UUID.randomUUID();
-        UUID colaboradorId = expectedtaskDTO.colaboradorId(); // se vier do builder
+        var usuarioLogado = UserDTOBuilder.builder()
+                .nome("Usuário Logado")
+                .build()
+                .toUser();
 
-        var usuarioLogado = new User();
-        usuarioLogado.setId(userId);
-        usuarioLogado.setNome("Usuário Logado");
+        var tarefaBuilder = TarefaDTOBuilder.builder()
+                .usuario(colaborador)
+                .build();
 
-        var colaborador = new User();
-        colaborador.setId(colaboradorId != null ? colaboradorId : UUID.randomUUID());
-        colaborador.setNome("Colaborador da Tarefa");
+        var tarefaRequestDTO = tarefaBuilder.buildRequestDTO();
+        var tarefa = tarefaBuilder.buildEntity();
 
-        //quando
+        // Mocks
         when(userService.getUsuarioLogado()).thenReturn(usuarioLogado);
         when(userRepository.findById(colaborador.getId())).thenReturn(Optional.of(colaborador));
-        when(tarefaRepository.save(any())).thenReturn(expectedTarefa);
+        when(tarefaRepository.save(any())).thenReturn(tarefa);
 
-        // então
-        var response = tarefaService.createTask(expectedtaskDTO);
+        // Act
+        var response = tarefaService.createTask(tarefaRequestDTO);
 
-        assertThat(response.titulo(), is(equalTo(expectedtaskDTO.titulo())));
-        assertThat(response.descricao(), is(equalTo(expectedtaskDTO.descricao())));
+        // Assert
+        assertThat(response.titulo(), is(tarefaRequestDTO.titulo()));
+        assertThat(response.descricao(), is(tarefaRequestDTO.descricao()));
+        assertThat(response.status(), is(tarefaRequestDTO.status()));
+        assertThat(response.colaborador(), is(colaborador.getNome()));
     }
 
 }

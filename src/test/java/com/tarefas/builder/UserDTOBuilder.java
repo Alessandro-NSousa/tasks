@@ -34,4 +34,12 @@ public class UserDTOBuilder {
         user.setAtivo(ativo);
         return user;
     }
+
+//    public UUID getId() {
+//        return id;
+//    }
+//
+//    public String getNome() {
+//        return nome;
+//    }
 }
