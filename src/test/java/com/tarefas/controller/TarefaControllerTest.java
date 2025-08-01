@@ -1,7 +1,8 @@
 package com.tarefas.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tarefas.builder.TarefaDTOBuilder;
-import com.tarefas.domain.enumeration.Status;
 import com.tarefas.dto.TarefaRequestDTO;
 import com.tarefas.dto.TarefaResponseDTO;
 import com.tarefas.mapper.TarefaMapper;
@@ -14,25 +15,25 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.List;
 
 import static com.tarefas.utils.JsonConvertionUtils.asJsonString;
-import static org.checkerframework.checker.units.qual.Prefix.one;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -40,14 +41,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TarefaControllerTest {
 
     private static final String TASK_API_URL_PATH = "/api/tarefas";
-    private static final UUID VALID_TASK_ID = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
-    private static final UUID INVALID_TASK_ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
     private MockMvc mockMvc;
 
     @Mock
     private TarefaService tarefaService;
     @InjectMocks
     private TarefaController tarefaController;
+
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
 
     @Spy
     private TarefaMapper tarefaMapper = Mappers.getMapper(TarefaMapper.class);
@@ -61,68 +63,54 @@ class TarefaControllerTest {
     }
 
     //quando POST é chamado, então uma tarefa é criada
-//    @Test
-//    void whenPOSTIsCalledThenATaskIsCreated() throws Exception {
-//        // given
-//        var tarefaRequestDTO = TarefaDTOBuilder.builder().build().buildRequestDTO();
-//        var expectedTarefa = tarefaMapper.tarefaRequestDTOToTarefa(tarefaRequestDTO);
-//        var expectedTarefaDTO = tarefaMapper.TarefaToTarefaResponseDTO(expectedTarefa);
-//
-//
-//
-//        // when
-//        when(tarefaService.createTask(tarefaRequestDTO)).thenReturn(expectedTarefaDTO);
-//
-//        // then
-//        mockMvc.perform(post(TASK_API_URL_PATH)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(asJsonString(tarefaRequestDTO)))
-//                .andExpect(status().isCreated())
-//                .andExpect(jsonPath("$.titulo", is(expectedTarefaDTO.titulo())))
-//                .andExpect(jsonPath("$.descricao", is(expectedTarefaDTO.descricao())))
-//                .andExpect(jsonPath("$.status", is(expectedTarefaDTO.status())));
-//    }
+    @Test
+    void whenPOSTIsCalledThenATaskIsCreated() throws Exception {
+        // given
+        var builder = TarefaDTOBuilder.builder().build();
+        var requestDTO = builder.buildRequestDTO();
+        var responseDTO = builder.buildResponseDTO();
 
-//    @Test
-//    void whenPOSTIsCalledThenATaskIsCreated() throws Exception {
-//        // given
-//        var tarefaRequestDTO = TarefaDTOBuilder.builder().build().buildRequestDTO(); // entrada da requisição
-//        var tarefaDomain = tarefaMapper.tarefaRequestDTOToTarefa(tarefaRequestDTO); // converte para entidade
-//        var tarefaResponseDTO = tarefaMapper.tarefaToTarefaResponseDTO(tarefaDomain); // resultado esperado
-//
-//        // when
-//        when(tarefaService.createTask(any(TarefaRequestDTO.class))).thenReturn(tarefaResponseDTO);
-//
-//        // then
-//        mockMvc.perform(post(TASK_API_URL_PATH)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(asJsonString(tarefaRequestDTO)))
-//                .andExpect(status().isCreated())
-//                .andExpect(jsonPath("$.titulo", is(tarefaResponseDTO.titulo())))
-//                .andExpect(jsonPath("$.descricao", is(tarefaResponseDTO.descricao())))
-//                .andExpect(jsonPath("$.status", is(tarefaResponseDTO.status())));
-//    }
-@Test
-void whenPOSTIsCalledThenATaskIsCreated() throws Exception {
-    // given
-    var builder = TarefaDTOBuilder.builder().build();
-    var requestDTO = builder.buildRequestDTO();
-    var responseDTO = builder.buildResponseDTO();
+        // when
+        when(tarefaService.createTask(any(TarefaRequestDTO.class)))
+                .thenReturn(responseDTO);
 
-    // when
-    when(tarefaService.createTask(any(TarefaRequestDTO.class)))
-            .thenReturn(responseDTO);
+        // then
+        mockMvc.perform(post(TASK_API_URL_PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(requestDTO)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.titulo", is(responseDTO.titulo())))
+                .andExpect(jsonPath("$.descricao", is(responseDTO.descricao())))
+                .andExpect(jsonPath("$.status", is(responseDTO.status().toString())))
+                .andExpect(jsonPath("$.colaborador", is(responseDTO.colaborador())));
+    }
 
-    // then
-    mockMvc.perform(post("/api/tarefas")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(asJsonString(requestDTO)))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.titulo", is(responseDTO.titulo())))
-            .andExpect(jsonPath("$.descricao", is(responseDTO.descricao())))
-            .andExpect(jsonPath("$.status", is(responseDTO.status().toString())))
-            .andExpect(jsonPath("$.colaborador", is(responseDTO.colaborador())));
-}
+    //quando O GET é chamado, então o status ok é retornado
+    @Test
+    void whenGETIsCalledWhenOkStatusIsReturned() throws Exception {
+        // given
+        var builder = TarefaDTOBuilder.builder().build();
+        var requestDTO = builder.buildRequestDTO();
+        var responseDTO = builder.buildResponseDTO();
+        var tarefa = builder.buildEntity();
+
+
+
+        Page<TarefaResponseDTO> tarefaPage = new PageImpl<>(List.of(responseDTO));
+
+        // when
+        when(tarefaService.getAllTasks(any(Pageable.class))).thenReturn(tarefaPage);
+
+        // then
+        mockMvc.perform(MockMvcRequestBuilders.get(TASK_API_URL_PATH)
+                        .param("page", "0")
+                        .param("size", "10")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content",hasSize(1)))
+                .andExpect(jsonPath("$.content[0].titulo", is(responseDTO.titulo())));
+    }
 
 
 

@@ -19,8 +19,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -47,44 +53,17 @@ class TarefaServiceTest {
     private LogService logService;
     @Mock
     private UserService userService;
+    @Mock
     private TarefaMapper tarefaMapper;
+
     private TarefaService tarefaService;
 
     @BeforeEach
     void setup() {
-        tarefaMapper = Mappers.getMapper(TarefaMapper.class);
         tarefaService = new TarefaService(tarefaRepository, userRepository, tarefaMapper, logService, userService);
     }
 
     //quando a tarefa é informada, então ela deve ser criada
-//    @Test
-//    void whenTaskInformedThenItShouldBeCreated() {
-//        // dados
-//        var tarefaRequestDTO = TarefaDTOBuilder.builder().build().buildRequestDTO();
-//        var tarefa = tarefaMapper.tarefaRequestDTOToTarefa(tarefaRequestDTO);
-//
-//        UUID userId = UUID.randomUUID();
-//        UUID colaboradorId = tarefaRequestDTO.colaboradorId();
-//
-//        var usuarioLogado = new User();
-//        usuarioLogado.setId(userId);
-//        usuarioLogado.setNome("Usuário Logado");
-//
-//
-//        //quando
-//        when(userService.getUsuarioLogado()).thenReturn(usuarioLogado);
-//        when(userRepository.findById(colaboradorId)).thenReturn(Optional.of(tarefa.getUsuario()));
-//        when(tarefaRepository.save(any())).thenReturn(tarefa);
-//
-//        // então
-//        var response = tarefaService.createTask(tarefaRequestDTO);
-//
-//        assertThat(response.titulo(), is(equalTo(tarefaRequestDTO.titulo())));
-//        assertThat(response.descricao(), is(equalTo(tarefaRequestDTO.descricao())));
-//        assertThat(response.status(), is(equalTo(tarefaRequestDTO.status())));
-//        assertThat(response.colaborador(), is(equalTo(tarefaRequestDTO.colaboradorId())));
-//    }
-
     @Test
     void whenTaskInformedThenItShouldBeCreated() {
         // Arrange
@@ -104,11 +83,14 @@ class TarefaServiceTest {
 
         var tarefaRequestDTO = tarefaBuilder.buildRequestDTO();
         var tarefa = tarefaBuilder.buildEntity();
+        var tarefaResponseDTO = tarefaBuilder.buildResponseDTO();
 
         // Mocks
+        when(tarefaMapper.tarefaRequestDTOToTarefa(tarefaRequestDTO)).thenReturn(tarefa);
         when(userService.getUsuarioLogado()).thenReturn(usuarioLogado);
         when(userRepository.findById(colaborador.getId())).thenReturn(Optional.of(colaborador));
         when(tarefaRepository.save(any())).thenReturn(tarefa);
+        when(tarefaMapper.tarefaToTarefaResponseDTO(tarefa)).thenReturn(tarefaResponseDTO);
 
         // Act
         var response = tarefaService.createTask(tarefaRequestDTO);
@@ -118,6 +100,39 @@ class TarefaServiceTest {
         assertThat(response.descricao(), is(tarefaRequestDTO.descricao()));
         assertThat(response.status(), is(tarefaRequestDTO.status()));
         assertThat(response.colaborador(), is(colaborador.getNome()));
+    }
+
+    //todo: implementar teste de erro ao cadastrar uma nova tarefa
+
+    //quando a Lista de tarefas for chamada, então retorne uma Lista de tarefas
+    @Test
+    void whenListTasksIsCalledThenReturnAListOfTasks() {
+        // given
+
+        var colaborador = UserDTOBuilder.builder()
+                .nome("Colaborador da Tarefa")
+                .build()
+                .toUser();
+
+        var tarefaBuilder = TarefaDTOBuilder.builder()
+                .usuario(colaborador)
+                .build();
+
+        var tarefa = tarefaBuilder.buildEntity();
+        var tarefaResponseDTO = tarefaBuilder.buildResponseDTO();
+
+        Pageable pageable = PageRequest.of(0, 10); // página 0, 10 itens por página
+        Page<Tarefa> tarefaPage = new PageImpl<>(List.of(tarefa));
+
+        //when
+        when(tarefaRepository.findAll(pageable)).thenReturn(tarefaPage);
+        when(tarefaMapper.tarefaToTarefaResponseDTO(tarefa)).thenReturn(tarefaResponseDTO);
+
+        //then
+        Page<TarefaResponseDTO> foundListTasksDTO = tarefaService.getAllTasks(pageable);
+
+        assertThat(foundListTasksDTO.getContent(), is(not(empty()))); //verifica se não retorna vazio
+        assertThat(foundListTasksDTO.getContent().get(0), is(equalTo(tarefaResponseDTO))); //compara
     }
 
 }
