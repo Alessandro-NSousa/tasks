@@ -1,6 +1,7 @@
 package com.tarefas.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tarefas.builder.TarefaDTOBuilder;
 import com.tarefas.dto.TarefaRequestDTO;
@@ -15,8 +16,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
@@ -42,17 +45,11 @@ class TarefaControllerTest {
 
     private static final String TASK_API_URL_PATH = "/api/tarefas";
     private MockMvc mockMvc;
-
     @Mock
     private TarefaService tarefaService;
     @InjectMocks
     private TarefaController tarefaController;
-
-    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-
-
-    @Spy
-    private TarefaMapper tarefaMapper = Mappers.getMapper(TarefaMapper.class);
+    TarefaMapper tarefaMapper = Mappers.getMapper(TarefaMapper.class);
 
     @BeforeEach
     void setUp() {
@@ -90,13 +87,9 @@ class TarefaControllerTest {
     void whenGETIsCalledWhenOkStatusIsReturned() throws Exception {
         // given
         var builder = TarefaDTOBuilder.builder().build();
-        var requestDTO = builder.buildRequestDTO();
         var responseDTO = builder.buildResponseDTO();
-        var tarefa = builder.buildEntity();
 
-
-
-        Page<TarefaResponseDTO> tarefaPage = new PageImpl<>(List.of(responseDTO));
+        Page<TarefaResponseDTO> tarefaPage = new PageImpl<>(List.of(responseDTO), PageRequest.of(0,10),1);
 
         // when
         when(tarefaService.getAllTasks(any(Pageable.class))).thenReturn(tarefaPage);
@@ -109,9 +102,10 @@ class TarefaControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content",hasSize(1)))
-                .andExpect(jsonPath("$.content[0].titulo", is(responseDTO.titulo())));
+                .andExpect(jsonPath("$.content[0].titulo", is(responseDTO.titulo())))
+                .andExpect(jsonPath("$.content[0].descricao", is(responseDTO.descricao())))
+                .andExpect(jsonPath("$.content[0].status", is(responseDTO.status().name())))
+                .andExpect(jsonPath("$.content[0].colaborador", is(responseDTO.colaborador())));
     }
-
-
 
 }
