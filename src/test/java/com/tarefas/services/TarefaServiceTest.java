@@ -3,44 +3,26 @@ package com.tarefas.services;
 import com.tarefas.builder.TarefaDTOBuilder;
 import com.tarefas.builder.UserDTOBuilder;
 import com.tarefas.domain.tarefa.Tarefa;
-import com.tarefas.domain.user.User;
-import com.tarefas.dto.TarefaRequestDTO;
 import com.tarefas.dto.TarefaResponseDTO;
 import com.tarefas.mapper.TarefaMapper;
 import com.tarefas.repository.TarefaRepository;
 import com.tarefas.repository.UserRepository;
-import lombok.AllArgsConstructor;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.ActiveProfiles;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
-import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class) //para testes de unidade
 class TarefaServiceTest {
@@ -56,12 +38,8 @@ class TarefaServiceTest {
     @Mock
     private TarefaMapper tarefaMapper;
 
+    @InjectMocks
     private TarefaService tarefaService;
-
-    @BeforeEach
-    void setup() {
-        tarefaService = new TarefaService(tarefaRepository, userRepository, tarefaMapper, logService, userService);
-    }
 
     //quando a tarefa é informada, então ela deve ser criada
     @Test
@@ -135,4 +113,16 @@ class TarefaServiceTest {
         assertThat(foundListTasksDTO.getContent().get(0), is(equalTo(tarefaResponseDTO))); //compara
     }
 
+    @Test
+    void whenValidTaskIdIsGivenThenReturnATask(){
+        var tarefa = TarefaDTOBuilder.builder().build().buildEntity();
+        var esperadaResponseDTO = tarefaMapper.tarefaToTarefaResponseDTO(tarefa);
+
+        when(tarefaRepository.findById(tarefa.getId())).thenReturn(Optional.of(tarefa));
+        when(tarefaMapper.tarefaToTarefaResponseDTO(tarefa)).thenReturn(esperadaResponseDTO);
+
+        TarefaResponseDTO responseDTO = tarefaService.getByTask(tarefa.getId());
+
+        assertThat(responseDTO, is(equalTo(esperadaResponseDTO)));
+    }
 }
