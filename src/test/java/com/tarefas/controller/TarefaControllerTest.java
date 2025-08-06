@@ -108,4 +108,20 @@ class TarefaControllerTest {
                 .andExpect(jsonPath("$.content[0].colaborador", is(responseDTO.colaborador())));
     }
 
+    @Test
+    void whenGETIsCalledWithValidIdThenOkStatusIsReturned() throws Exception {
+        var tarefa = TarefaDTOBuilder.builder().build().buildEntity();
+        var esperadaResponseDTO = tarefaMapper.tarefaToTarefaResponseDTO(tarefa);
+
+        when(tarefaService.getByTask(esperadaResponseDTO.id())).thenReturn(esperadaResponseDTO);
+
+        // then
+        mockMvc.perform(MockMvcRequestBuilders.get(TASK_API_URL_PATH + "/" + esperadaResponseDTO.id())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.titulo", is(esperadaResponseDTO.titulo())))
+                .andExpect(jsonPath("$.descricao", is(esperadaResponseDTO.descricao())))
+                .andExpect(jsonPath("$.status", is(esperadaResponseDTO.status().toString())));
+    }
+
 }
