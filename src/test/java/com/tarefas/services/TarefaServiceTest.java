@@ -125,4 +125,21 @@ class TarefaServiceTest {
 
         assertThat(responseDTO, is(equalTo(esperadaResponseDTO)));
     }
+
+    @Test
+    void whenValidUserIdIsGivenThenReturnATask(){
+        var tarefa = TarefaDTOBuilder.builder().build().buildEntity();
+        var esperadaResponseDTO = tarefaMapper.tarefaToTarefaResponseDTO(tarefa);
+
+        Pageable pageable = PageRequest.of(0, 10); // página 0, 10 itens por página
+        Page<Tarefa> tarefaPage = new PageImpl<>(List.of(tarefa));
+
+        when(userRepository.findById(tarefa.getUsuario().getId())).thenReturn(Optional.of(tarefa.getUsuario()));
+        when(tarefaRepository.findAllByUsuario(Optional.of(tarefa.getUsuario()), pageable)).thenReturn(tarefaPage);
+        when(tarefaMapper.tarefaToTarefaResponseDTO(tarefa)).thenReturn(esperadaResponseDTO);
+
+        Page<TarefaResponseDTO> responseDTO = tarefaService.getByUser(tarefa.getUsuario().getId(), pageable );
+
+        assertThat(responseDTO.getContent().get(0), is(equalTo(esperadaResponseDTO)));
+    }
 }

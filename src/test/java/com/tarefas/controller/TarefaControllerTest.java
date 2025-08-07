@@ -34,6 +34,7 @@ import static com.tarefas.utils.JsonConvertionUtils.asJsonString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -122,6 +123,24 @@ class TarefaControllerTest {
                 .andExpect(jsonPath("$.titulo", is(esperadaResponseDTO.titulo())))
                 .andExpect(jsonPath("$.descricao", is(esperadaResponseDTO.descricao())))
                 .andExpect(jsonPath("$.status", is(esperadaResponseDTO.status().toString())));
+    }
+
+    @Test
+    void whenGETIsCalledWithValidIdOfUserThenOkStatusIsReturned() throws Exception {
+        var tarefa = TarefaDTOBuilder.builder().build().buildEntity();
+        var esperadaResponseDTO = tarefaMapper.tarefaToTarefaResponseDTO(tarefa);
+
+        Page<TarefaResponseDTO> tarefaPage = new PageImpl<>(List.of(esperadaResponseDTO), PageRequest.of(0,10),1);
+
+        when(tarefaService.getByUser(eq(tarefa.getUsuario().getId()),any(Pageable.class))).thenReturn(tarefaPage);
+
+        // then
+        mockMvc.perform(MockMvcRequestBuilders.get(TASK_API_URL_PATH + "/user/" + tarefa.getUsuario().getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].titulo", is(esperadaResponseDTO.titulo())))
+                .andExpect(jsonPath("$.content[0].descricao", is(esperadaResponseDTO.descricao())))
+                .andExpect(jsonPath("$.content[0].status", is(esperadaResponseDTO.status().toString())));
     }
 
 }
