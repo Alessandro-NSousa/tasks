@@ -9,5 +9,5 @@ public record TarefaRequestDTO(
         String titulo,
         String descricao,
         Status status,
-        User colaborador) {
+        UUID colaboradorId) {
 }

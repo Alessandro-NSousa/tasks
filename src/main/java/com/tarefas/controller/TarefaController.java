@@ -55,10 +55,10 @@ public class TarefaController {
         return this.tarefaService.getByUser(user_id, paginacao);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity atualizarTarefa(@RequestBody TarefaPutRequestDTO dados){
-        var tarefa = this.tarefaService.atualizarTarefa(dados);
-        return ResponseEntity.ok(new TarefaResponsePutDTO(tarefa));
+    public ResponseEntity atualizarTarefa(@PathVariable UUID id, @RequestBody TarefaPutRequestDTO dados){
+        var tarefa = this.tarefaService.atualizarTarefa(id,dados);
+        return ResponseEntity.ok(tarefa);
     }
 }

@@ -3,13 +3,11 @@ package com.tarefas.services;
 import com.tarefas.domain.enumeration.Status;
 import com.tarefas.domain.tarefa.Tarefa;
 import com.tarefas.domain.user.User;
-import com.tarefas.dto.LogRequestDTO;
-import com.tarefas.dto.TarefaPutRequestDTO;
-import com.tarefas.dto.TarefaRequestDTO;
-import com.tarefas.dto.TarefaResponseDTO;
+import com.tarefas.dto.*;
 import com.tarefas.mapper.TarefaMapper;
 import com.tarefas.repository.TarefaRepository;
 import com.tarefas.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,17 +18,18 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class TarefaService {
 
-    @Autowired
+
     private TarefaRepository repository;
-    @Autowired
+
     private UserRepository userRepository;
-    @Autowired
+
     private TarefaMapper mapper;
-    @Autowired
+
     private LogService logService;
-    @Autowired
+
     private UserService userService;
 
     public TarefaResponseDTO createTask(TarefaRequestDTO data) {
@@ -39,7 +38,7 @@ public class TarefaService {
 
         Tarefa tarefa = mapper.tarefaRequestDTOToTarefa(data);
 
-        User usuario = userRepository.findById(data.colaborador().getId())
+        User usuario = userRepository.findById(data.colaboradorId())
                 .orElseThrow(() -> new RuntimeException("Colaborador não encontrado"));
 
         tarefa.setUsuario(usuario);
@@ -52,34 +51,34 @@ public class TarefaService {
                 , Tarefa.class.getSimpleName(),usuarioLogado.getId());
         logService.RegistrarLog(log);
 
-        return mapper.TarefaToTarefaResponseDTO(newTask);
+        return mapper.tarefaToTarefaResponseDTO(newTask);
     }
 
     public Page<TarefaResponseDTO> getAllTasks(Pageable pageable) {
 
-        return repository.findAll(pageable).map(mapper::TarefaToTarefaResponseDTO);
+        return repository.findAll(pageable).map(mapper::tarefaToTarefaResponseDTO);
     }
 
     public TarefaResponseDTO getByTask(UUID taskId) {
 
         Tarefa tarefa = repository.findById(taskId).orElseThrow(() -> new IllegalArgumentException("Task not found"));
 
-        return mapper.TarefaToTarefaResponseDTO(tarefa);
+        return mapper.tarefaToTarefaResponseDTO(tarefa);
     }
 
     public Page<TarefaResponseDTO> getByUser(UUID userId, Pageable pageable) {
 
         var user = userRepository.findById(userId);
 
-        return repository.findAll(pageable).map(mapper::TarefaToTarefaResponseDTO);
+        return repository.findAllByUsuario(user,pageable).map(mapper::tarefaToTarefaResponseDTO);
     }
 
-    public Tarefa atualizarTarefa(TarefaPutRequestDTO dados) {
-        var tarefa = repository.findById(dados.id())
+    public TarefaResponsePutDTO atualizarTarefa(UUID id, TarefaPutRequestDTO dados) {
+        var tarefa = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
 
         mapper.updateTarefaFromDTO(dados, tarefa, userRepository);
 
-        return repository.save(tarefa);
+        return mapper.tarefaToTarefaResponsePutDTO(repository.save(tarefa));
     }
 }
