@@ -2,6 +2,9 @@ package com.tarefas.builder;
 
 import com.tarefas.domain.user.User;
 import com.tarefas.domain.user.UserRole;
+import com.tarefas.dto.LoginRequestDTO;
+import com.tarefas.dto.LoginResponseDTO;
+import com.tarefas.dto.TarefaRequestDTO;
 import lombok.Builder;
 
 import java.util.Collection;
@@ -35,11 +38,8 @@ public class UserDTOBuilder {
         return user;
     }
 
-//    public UUID getId() {
-//        return id;
-//    }
-//
-//    public String getNome() {
-//        return nome;
-//    }
+    public LoginRequestDTO buildRequestDTO() {
+        return new LoginRequestDTO(email, password);
+    }
+
 }

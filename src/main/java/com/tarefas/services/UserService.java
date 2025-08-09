@@ -8,6 +8,7 @@ import com.tarefas.dto.UserResponseDTO;
 import com.tarefas.infra.security.TokenService;
 import com.tarefas.mapper.UserMapper;
 import com.tarefas.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,21 +20,19 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class UserService {
 
-    @Autowired
-    private TokenService tokenService;
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserMapper mapper;
-    private final PasswordEncoder passwordEncoder;
 
-    public UserService(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
+    private TokenService tokenService;
+    private AuthenticationManager authenticationManager;
+    private UserRepository userRepository;
+    private UserMapper mapper;
+    private PasswordEncoder passwordEncoder;
+
+//    public UserService(PasswordEncoder passwordEncoder) {
+//        this.passwordEncoder = passwordEncoder;
+//    }
 
     public LoginResponseDTO login(LoginRequestDTO body) {
 
