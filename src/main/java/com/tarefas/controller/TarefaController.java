@@ -11,10 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -60,5 +62,11 @@ public class TarefaController {
     public ResponseEntity atualizarTarefa(@PathVariable UUID id, @RequestBody TarefaPutRequestDTO dados){
         var tarefa = this.tarefaService.atualizarTarefa(id,dados);
         return ResponseEntity.ok(tarefa);
+    }
+
+    @GetMapping("criacao/{criacao}")
+    public Page<TarefaResponseDTO> tarefasPorCriacao(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date criacao, @PageableDefault(sort = {"status"}) Pageable paginacao){
+        System.out.println("passou aqui");
+        return tarefaService.tarefasPorCriacao(criacao, paginacao);
     }
 }

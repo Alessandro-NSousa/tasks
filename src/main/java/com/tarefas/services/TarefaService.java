@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -80,5 +81,10 @@ public class TarefaService {
         mapper.updateTarefaFromDTO(dados, tarefa, userRepository);
 
         return mapper.tarefaToTarefaResponsePutDTO(repository.save(tarefa));
+    }
+
+    public Page<TarefaResponseDTO> tarefasPorCriacao(Date criacao, Pageable pageable){
+
+        return repository.findAllByCriacao(criacao, pageable).map(mapper::tarefaToTarefaResponseDTO);
     }
 }
