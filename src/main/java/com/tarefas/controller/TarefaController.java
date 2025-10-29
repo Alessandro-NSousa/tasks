@@ -57,7 +57,7 @@ public class TarefaController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity atualizarTarefa(@PathVariable UUID id, @RequestBody TarefaPutRequestDTO dados){
+    public ResponseEntity updateTask(@PathVariable UUID id, @RequestBody TarefaPutRequestDTO dados){
         var tarefa = this.tarefaService.atualizarTarefa(id,dados);
         return ResponseEntity.ok(tarefa);
     }
