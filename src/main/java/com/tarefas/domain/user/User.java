@@ -26,8 +26,10 @@ public class User  implements UserDetails {
     private String nome;
     private String email;
     private String password;
+
+    @Enumerated(EnumType.STRING)
     private UserRole role;
-    private Boolean ativo;
+    private Boolean ativo = true;
 
     public User(String nome, String login, String password, UserRole role){
         this.nome = nome;

@@ -35,4 +35,5 @@ public class Tarefa {
     @JoinColumn(name = "usuario_id")
     private User usuario;
 
+
 }
