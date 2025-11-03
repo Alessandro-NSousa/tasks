@@ -59,6 +59,11 @@ public class TarefaService {
         return repository.findAll(pageable).map(mapper::tarefaToTarefaResponseDTO);
     }
 
+    public Page<TarefaResponseDTO> getTasksByStatus(String statusString, Pageable pageable) {
+        Status status = Status.fromString(statusString);
+        return repository.findByStatus(status, pageable).map(mapper::tarefaToTarefaResponseDTO);
+    }
+
     public TarefaResponseDTO getByTask(UUID taskId) {
 
         Tarefa tarefa = repository.findById(taskId).orElseThrow(() -> new IllegalArgumentException("Task not found"));
