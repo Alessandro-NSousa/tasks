@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 @Table(name = "tarefa")
@@ -27,7 +28,7 @@ public class Tarefa {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    private LocalDateTime criacao;
+    private LocalDate criacao;
     @Column(name = "ultima_alteracao")
     private LocalDateTime ultimaAlteracao;
 

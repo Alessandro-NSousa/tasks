@@ -7,6 +7,7 @@ import com.tarefas.dto.TarefaRequestDTO;
 import com.tarefas.dto.TarefaResponseDTO;
 import lombok.Builder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -26,7 +27,7 @@ public class TarefaDTOBuilder {
     private Status status = Status.PENDENTE;
 
     @Builder.Default
-    private LocalDateTime criacao = LocalDateTime.now();
+    private LocalDate criacao = LocalDate.now();
 
     @Builder.Default
     private LocalDateTime ultimaAlteracao = LocalDateTime.now();

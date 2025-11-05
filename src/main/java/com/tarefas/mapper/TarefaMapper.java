@@ -22,7 +22,7 @@ public interface TarefaMapper {
 
     //target = alvo - source = fonte
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "criacao", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "criacao", expression = "java(java.time.LocalDate.now())")
     @Mapping(target = "ultimaAlteracao", ignore = true)
     @Mapping(target = "status", source = "status", qualifiedByName = "mapStatus")
     @Mapping(target = "usuario.id", source = "colaboradorId")
