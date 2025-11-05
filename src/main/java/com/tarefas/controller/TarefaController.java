@@ -55,6 +55,12 @@ public class TarefaController {
         return this.tarefaService.getByUser(user_id, paginacao);
     }
 
+    @GetMapping("status/{status}")
+    public Page<TarefaResponseDTO> getTasksByStatus(@PathVariable String status, @PageableDefault(sort = {"status"}) Pageable paginacao){
+
+        return this.tarefaService.getTasksByStatus(status, paginacao);
+    }
+
     @PutMapping("/{id}")
     @Transactional
     public ResponseEntity updateTask(@PathVariable UUID id, @RequestBody TarefaPutRequestDTO dados){

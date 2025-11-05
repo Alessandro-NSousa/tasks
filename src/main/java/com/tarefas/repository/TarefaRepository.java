@@ -1,5 +1,6 @@
 package com.tarefas.repository;
 
+import com.tarefas.domain.enumeration.Status;
 import com.tarefas.domain.tarefa.Tarefa;
 import com.tarefas.domain.user.User;
 import org.springframework.data.domain.Page;
@@ -14,5 +15,6 @@ public interface TarefaRepository extends JpaRepository<Tarefa, UUID> {
 
 
     Page<Tarefa> findAllByUsuario(Optional<User> user, Pageable pageable);
+    Page<Tarefa> findByStatus(Status status, Pageable pageable);
 
 }
