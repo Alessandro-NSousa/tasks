@@ -15,7 +15,7 @@ public interface TarefaRepository extends JpaRepository<Tarefa, UUID> {
 
 
     Page<Tarefa> findAllByUsuario(User user, Pageable pageable);
-    //Page<Tarefa> findByStatusAndAtivoTrue(Status status, Pageable pageable);
+    //Page<Tarefa> findByUsuarioAndAtivoTrue(User user, Pageable pageable);
     Page<Tarefa> findAllByAtivoTrue(Pageable pageable);
     Page<Tarefa> findByStatus(Status status, Pageable pageable);
     Optional<Tarefa> findByIdAndAtivoTrue(UUID id);
