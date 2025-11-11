@@ -22,6 +22,7 @@ public class Tarefa {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
     private String titulo;
     private String descricao;
 
@@ -36,5 +37,6 @@ public class Tarefa {
     @JoinColumn(name = "usuario_id")
     private User usuario;
 
+    private boolean ativo;
 
 }

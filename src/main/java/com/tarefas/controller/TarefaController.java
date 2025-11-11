@@ -67,4 +67,11 @@ public class TarefaController {
         var tarefa = this.tarefaService.atualizarTarefa(id,dados);
         return ResponseEntity.ok(tarefa);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTask(@PathVariable UUID id) {
+        tarefaService.deleteTask(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

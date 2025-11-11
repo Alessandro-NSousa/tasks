@@ -56,7 +56,7 @@ public class TarefaService {
 
     public Page<TarefaResponseDTO> getAllTasks(Pageable pageable) {
 
-        return repository.findAll(pageable).map(mapper::tarefaToTarefaResponseDTO);
+        return repository.findAllByAtivoTrue(pageable).map(mapper::tarefaToTarefaResponseDTO);
     }
 
     public Page<TarefaResponseDTO> getTasksByStatus(String statusString, Pageable pageable) {
@@ -73,9 +73,9 @@ public class TarefaService {
 
     public Page<TarefaResponseDTO> getByUser(UUID userId, Pageable pageable) {
 
-        var user = userRepository.findById(userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuário nao encontrado"));
 
-        return repository.findAllByUsuario(user,pageable).map(mapper::tarefaToTarefaResponseDTO);
+        return repository.findAllByUsuario(user, pageable).map(mapper::tarefaToTarefaResponseDTO);
     }
 
     public TarefaResponsePutDTO atualizarTarefa(UUID id, TarefaPutRequestDTO dados) {
@@ -85,5 +85,22 @@ public class TarefaService {
         mapper.updateTarefaFromDTO(dados, tarefa, userRepository);
 
         return mapper.tarefaToTarefaResponsePutDTO(repository.save(tarefa));
+    }
+
+    public void deleteTask(UUID id) {
+        var tarefa = repository.findByIdAndAtivoTrue(id)
+                .orElseThrow(() -> new RuntimeException("Tarefa não encontrada ou já excluída"));
+
+        tarefa.setAtivo(false);
+        repository.save(tarefa);
+
+        var usuarioLogado = userService.getUsuarioLogado();
+        var log = new LogRequestDTO(
+                "O usuário " + usuarioLogado.getNome() + " (ID: " + usuarioLogado.getId() +
+                 ") ecluiu a tarefa '" + tarefa.getTitulo() + "' .",
+                Tarefa.class.getSimpleName(),
+                usuarioLogado.getId()
+        );
+        logService.RegistrarLog(log);
     }
 }
