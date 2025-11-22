@@ -8,6 +8,9 @@ import com.tarefas.dto.TarefaRequestDTO;
 import com.tarefas.dto.TarefaResponseDTO;
 import com.tarefas.mapper.TarefaMapper;
 import com.tarefas.services.TarefaService;
+import com.tarefas.dto.SugestaoIARequestDTO;
+import com.tarefas.dto.SugestaoIAResponseDTO;
+import com.tarefas.services.IAService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -142,5 +145,39 @@ class TarefaControllerTest {
                 .andExpect(jsonPath("$.content[0].descricao", is(esperadaResponseDTO.descricao())))
                 .andExpect(jsonPath("$.content[0].status", is(esperadaResponseDTO.status().toString())));
     }
+
+    @Test
+    void whenPOSTSugerirIsCalledThenIASuggestionIsReturned() throws Exception {
+
+        String textoEntrada = "Preciso organizar meu projeto";
+        String respostaIA = "Sugestão gerada pela IA";
+
+        SugestaoIARequestDTO requestDTO = new SugestaoIARequestDTO(textoEntrada);
+
+
+        when(tarefaController.iaService.gerarResposta(textoEntrada)).thenReturn(respostaIA);
+
+
+        mockMvc.perform(post(TASK_API_URL_PATH + "/sugerir")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(requestDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.texto", is(respostaIA)));
+    }
+
+    @Test
+    void whenPOSTSugerirIsCalledWithEmptyTextThenBadRequestIsReturned() throws Exception {
+
+        SugestaoIARequestDTO requestDTO = new SugestaoIARequestDTO("");
+
+        mockMvc.perform(post(TASK_API_URL_PATH + "/sugerir")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(requestDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.texto", is("Texto não pode estar vazio.")));
+    }
+
+
+
 
 }

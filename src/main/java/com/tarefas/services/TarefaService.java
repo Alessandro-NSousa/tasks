@@ -32,9 +32,25 @@ public class TarefaService {
 
     private UserService userService;
 
+    private IAService iaService;
+
+
     public TarefaResponseDTO createTask(TarefaRequestDTO data) {
 
         var usuarioLogado = userService.getUsuarioLogado();
+
+        if ((data.titulo() == null || data.titulo().isBlank())
+            && data.descricao() != null && !data.descricao().isBlank()) {
+
+            var gerado = iaService.gerarTarefa(data.descricao());
+
+            data = new TarefaRequestDTO(
+                    gerado.get("titulo"),
+                    gerado.get("descricao"),
+                    data.status(),
+                    data.colaboradorId()
+            );
+        }
 
         Tarefa tarefa = mapper.tarefaRequestDTOToTarefa(data);
 
@@ -103,4 +119,23 @@ public class TarefaService {
         );
         logService.RegistrarLog(log);
     }
+
+    public SugestaoIAResponseDTO gerarSugestao(UUID id) {
+
+        Tarefa tarefa = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
+
+        String prompt = """
+            A seguir está a descrição de uma tarefa:
+
+            "%s"
+
+            Gere uma sugestão útil para o usuário. Seja breve e objetivo.
+            """.formatted(tarefa.getDescricao());
+
+        String resposta = iaService.gerarResposta(prompt);
+
+        return new SugestaoIAResponseDTO(resposta);
+    }
+
 }

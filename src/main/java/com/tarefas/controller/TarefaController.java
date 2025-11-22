@@ -1,11 +1,12 @@
 package com.tarefas.controller;
 
 import com.tarefas.domain.tarefa.Tarefa;
-import com.tarefas.dto.TarefaPutRequestDTO;
-import com.tarefas.dto.TarefaRequestDTO;
-import com.tarefas.dto.TarefaResponsePutDTO;
-import com.tarefas.dto.TarefaResponseDTO;
+import com.tarefas.dto.*;
+
+
 import com.tarefas.services.TarefaService;
+import com.tarefas.services.IAService;
+
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,12 @@ import java.util.stream.Collectors;
 public class TarefaController {
     @Autowired
     private TarefaService tarefaService;
+
+    private final IAService iaService;
+
+    public TarefaController(IAService iaService) {
+        this.iaService = iaService;
+    }
 
     @PostMapping
     public ResponseEntity createTask(@RequestBody TarefaRequestDTO data, UriComponentsBuilder uriBuilder) {
@@ -61,17 +68,26 @@ public class TarefaController {
         return this.tarefaService.getTasksByStatus(status, paginacao);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/update")
     @Transactional
     public ResponseEntity updateTask(@PathVariable UUID id, @RequestBody TarefaPutRequestDTO dados){
         var tarefa = this.tarefaService.atualizarTarefa(id,dados);
         return ResponseEntity.ok(tarefa);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}/delete")
     public ResponseEntity<Void> deleteTask(@PathVariable UUID id) {
         tarefaService.deleteTask(id);
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/sugerir")
+    public ResponseEntity<SugestaoIAResponseDTO> sugerir(@RequestBody SugestaoIARequestDTO request) {
+        String resposta = iaService.gerarResposta(request.texto());
+        return ResponseEntity.ok(new SugestaoIAResponseDTO(resposta));
+    }
+
 }
+
+
+
