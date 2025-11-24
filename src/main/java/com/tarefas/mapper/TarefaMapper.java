@@ -26,6 +26,7 @@ public interface TarefaMapper {
     @Mapping(target = "ultimaAlteracao", ignore = true)
     @Mapping(target = "status", source = "status", qualifiedByName = "mapStatus")
     @Mapping(target = "usuario.id", source = "colaboradorId")
+    @Mapping(target = "ativo", constant = "true")
     Tarefa tarefaRequestDTOToTarefa(TarefaRequestDTO requestDTO);
 
 
@@ -42,6 +43,7 @@ public interface TarefaMapper {
     @Mapping(target = "ultimaAlteracao", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "status", source = "status", qualifiedByName = "mapStatus")
     @Mapping(target = "usuario", expression = "java(buscarUsuario(dto.colaboradorId(), tarefa, userRepository))")
+    @Mapping(target = "ativo", ignore = true)
     void updateTarefaFromDTO(TarefaPutRequestDTO dto,
                              @MappingTarget Tarefa tarefa,
                              @Context UserRepository userRepository);
