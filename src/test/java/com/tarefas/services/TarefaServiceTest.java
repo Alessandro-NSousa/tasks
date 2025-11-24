@@ -22,8 +22,8 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class) //para testes de unidade
 class TarefaServiceTest {
 
@@ -141,5 +141,33 @@ class TarefaServiceTest {
         Page<TarefaResponseDTO> responseDTO = tarefaService.getByUser(tarefa.getUsuario().getId(), pageable );
 
         assertThat(responseDTO.getContent().get(0), is(equalTo(esperadaResponseDTO)));
+    }
+
+    @Test
+    void WhenATaskStatusIsProvidedReturnATaskList() {
+
+        var tarefa = TarefaDTOBuilder.builder().build().buildEntity();
+        var esperadaResponseDTO = tarefaMapper.tarefaToTarefaResponseDTO(tarefa);
+
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Tarefa> tarefaPage = new PageImpl<>(List.of(tarefa), pageable, 1);
+
+        when(tarefaRepository.findByStatusAndAtivoTrue(tarefa.getStatus(), pageable))
+                .thenReturn(tarefaPage);
+
+        when(tarefaMapper.tarefaToTarefaResponseDTO(tarefa))
+                .thenReturn(esperadaResponseDTO);
+
+        Page<TarefaResponseDTO> responseDTO = tarefaService.getTasksByStatus(
+                tarefa.getStatus().toString(),
+                pageable
+        );
+        // Verifica conteúdo
+        assertThat(responseDTO.getContent().get(0), is(equalTo(esperadaResponseDTO)));
+        // Verifica metadados da Page
+        assertThat(responseDTO.getTotalElements(), is(1L));
+        assertThat(responseDTO.getContent().size(), is(1));
+        // Verifica se o repository foi chamado corretamente
+        verify(tarefaRepository).findByStatusAndAtivoTrue(tarefa.getStatus(), pageable);
     }
 }

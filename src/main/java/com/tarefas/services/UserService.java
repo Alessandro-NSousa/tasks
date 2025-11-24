@@ -1,14 +1,13 @@
 package com.tarefas.services;
 
 import com.tarefas.domain.user.User;
-import com.tarefas.dto.LoginRequestDTO;
-import com.tarefas.dto.RegisterRequestDTO;
-import com.tarefas.dto.LoginResponseDTO;
-import com.tarefas.dto.UserResponseDTO;
+import com.tarefas.dto.*;
 import com.tarefas.infra.security.TokenService;
 import com.tarefas.mapper.UserMapper;
 import com.tarefas.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -29,6 +28,9 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private UserMapper mapper;
+    @Autowired
+    private LogService logService;
+
     private final PasswordEncoder passwordEncoder;
 
     public UserService(PasswordEncoder passwordEncoder) {
@@ -72,5 +74,26 @@ public class UserService {
         User usuarioLogado = userRepository.findByEmail(usernameLogado);
 
         return usuarioLogado;
+    }
+
+    public void deleteUser(UUID id) {
+        var usuario = userRepository.findByIdAndAtivoTrue(id)
+                .orElseThrow(() -> new RuntimeException("Usuário nao encontrado ou já excluído"));
+
+        usuario.setAtivo(false);
+        userRepository.save(usuario);
+
+        var usuarioLogado = getUsuarioLogado();
+        var log = new LogRequestDTO(
+                "O usuário " + usuarioLogado.getUsername() + " (ID: " + usuarioLogado.getId() +
+                ") excluiu o usuário '" + usuario.getNome() + "'.",
+                User.class.getSimpleName(),
+                usuarioLogado.getId()
+        );
+        logService.RegistrarLog(log);
+    }
+
+    public Page<UserResponseDTO> getAllUsers(Pageable paginacao) {
+        return userRepository.findAllByAtivoTrue(paginacao).map(mapper::UserToUserResponseDTO);
     }
 }

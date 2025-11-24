@@ -61,7 +61,7 @@ public class TarefaService {
 
     public Page<TarefaResponseDTO> getTasksByStatus(String statusString, Pageable pageable) {
         Status status = Status.fromString(statusString);
-        return repository.findByStatus(status, pageable).map(mapper::tarefaToTarefaResponseDTO);
+        return repository.findByStatusAndAtivoTrue(status, pageable).map(mapper::tarefaToTarefaResponseDTO);
     }
 
     public TarefaResponseDTO getByTask(UUID taskId) {

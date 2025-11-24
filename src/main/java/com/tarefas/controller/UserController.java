@@ -4,10 +4,14 @@ import com.tarefas.domain.user.User;
 import com.tarefas.dto.*;
 import com.tarefas.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -43,5 +47,11 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+
+    @GetMapping
+    public Page<UserResponseDTO> getAllUsers(@PageableDefault(sort = {"id"}) Pageable paginacao){
+
+        return this.userService.getAllUsers(paginacao);
+    }
 
 }
