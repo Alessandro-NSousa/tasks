@@ -103,7 +103,7 @@ class TarefaServiceTest {
         Page<Tarefa> tarefaPage = new PageImpl<>(List.of(tarefa));
 
         //when
-        when(tarefaRepository.findAll(pageable)).thenReturn(tarefaPage);
+        when(tarefaRepository.findAllByAtivoTrue(pageable)).thenReturn(tarefaPage);
         when(tarefaMapper.tarefaToTarefaResponseDTO(tarefa)).thenReturn(tarefaResponseDTO);
 
         //then
@@ -135,7 +135,7 @@ class TarefaServiceTest {
         Page<Tarefa> tarefaPage = new PageImpl<>(List.of(tarefa));
 
         when(userRepository.findById(tarefa.getUsuario().getId())).thenReturn(Optional.of(tarefa.getUsuario()));
-        when(tarefaRepository.findAllByUsuario(Optional.of(tarefa.getUsuario()), pageable)).thenReturn(tarefaPage);
+        when(tarefaRepository.findAllByUsuario(tarefa.getUsuario(), pageable)).thenReturn(tarefaPage);
         when(tarefaMapper.tarefaToTarefaResponseDTO(tarefa)).thenReturn(esperadaResponseDTO);
 
         Page<TarefaResponseDTO> responseDTO = tarefaService.getByUser(tarefa.getUsuario().getId(), pageable );
