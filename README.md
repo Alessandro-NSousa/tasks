@@ -155,8 +155,6 @@ mvn spring-boot:run
 POST /api/auth/register
 ```
 
-## Para utilizar os Endpoints abaixo é necessário que se obtenha um token através do Endepoint de login.
-
 ```
 POST /api/auth/login
 ```
