@@ -1,13 +1,15 @@
 package com.tarefas.domain.tarefa;
 
-import com.tarefas.domain.colaborador.Colaborador;
 import com.tarefas.domain.enumeration.Status;
+import com.tarefas.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 @Table(name = "tarefa")
 @Entity
@@ -26,7 +28,14 @@ public class Tarefa {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    private LocalDate criacao;
+    @Column(name = "ultima_alteracao")
+    private LocalDateTime ultimaAlteracao;
+
     @ManyToOne
-    @JoinColumn(name = "colaborador_id")
-    private Colaborador colaborador;
+    @JoinColumn(name = "usuario_id")
+    private User usuario;
+
+    private boolean ativo;
+
 }
