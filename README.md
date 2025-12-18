@@ -76,10 +76,11 @@ src
 
 ## Diagrama de Arquitetura
 
+```mermaid
 flowchart TD
-A[Controller] --> B[Service]
-B --> C[Repository]
-C --> D[(Database)]
+    A[Controller] --> B[Service]
+    B --> C[Repository]
+    C --> D[(Database)]
 
     B --> E[Domain]
     E --> E1[Tarefa]
@@ -95,7 +96,7 @@ C --> D[(Database)]
     A --> H[Infra]
     H --> H1[Security]
     H --> H2[Exception Handling]
-
+```
 
 ---
 
@@ -141,8 +142,12 @@ mvn spring-boot:run
 
 ---
 
-##  Endpoints Principais
+##  A documentação da API com o Swagger está disponível através do Endpoint:
 
+```
+/swagger-ui/index.html
+```
+## Até o momento, os testes através do Swagger estão diponíveis somente na branch develop.
 ## Para o primeiro acesso, é possível cadastrar um novo usuário através do Endpoint abaixo:
 
 ### Cadastrar usuário
@@ -151,53 +156,9 @@ mvn spring-boot:run
 POST /api/auth/register
 ```
 
-````
-{
-"nome": "String ",
-"email": "String",
-"password": "String",
-"role": "USER"
-}
-````
-
-## Para utilizar os Endpoints abaixo é necessário que se obtenha um token através do Endepoint de login.
-
-### Realizar Login
-
 ```
 POST /api/auth/login
 ```
-
-### Criar tarefa
-
-```
-POST /api/tasks
-```
-
-### Buscar todas
-
-```
-GET /api/tasks
-```
-
-### Buscar por ID
-
-```
-GET /api/tasks/{id}
-```
-
-### Atualizar
-
-```
-PUT /api/tasks/{id}
-```
-
-### Exclusão lógica
-
-```
-DELETE /api/tasks/{id}
-```
-
 ---
 
 ## 🏗 Futuras Implementações
@@ -208,11 +169,7 @@ DELETE /api/tasks/{id}
 
 ---
 
-
-
----
-
-## 👨‍💻 Autor
+##  Autores
 
 Projeto desenvolvido por **Alessando Sousa** e **John Helder** com foco em arquitetura robusta e boas práticas profissionais.
  
