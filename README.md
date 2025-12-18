@@ -1,35 +1,26 @@
 # Tasks API
 
-![Java](https://img.shields.io/badge/Java-21-red)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3-brightgreen)
-![Maven](https://img.shields.io/badge/Maven-4.0.0-blue)
-![MySQL](https://img.shields.io/badge/Database-PostgreSQL-orange)
-![JPA](https://img.shields.io/badge/JPA-Hibernate-yellow)
-![Docker](https://img.shields.io/badge/Docker-enabled-2496ED)
-![Tests](https://img.shields.io/badge/Tests-JUnit5-lightgrey)
-![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-purple)
-
-API REST profissional para gerenciamento de tarefas, construída com **Java 21**, **Spring Boot 3**, arquitetura limpa em camadas e integração com banco de dados **PostgreSQL**.
+API REST  para gerenciamento de tarefas, construída com **Java 21**, **Spring Boot 3**, arquitetura em camadas e integração com banco de dados **PostgreSQL**.
 
 ---
 
-## 🚀 Tecnologias Utilizadas
+##  Tecnologias Utilizadas
 
 * **Java 21**
 * **Spring Boot 3.3**
 * **Spring Web**
 * **Spring Data JPA**
 * **PostgreSQL**
-* **Docker & Docker Compose**
 * **Maven**
 * **JUnit 5**
 * **Lombok**
+* **MapStruct**
 
 ---
 
-## 📌 Funcionalidades
+## Funcionalidades
 
-* Criar tarefas
+* Cadastrar tarefa
 * Listar tarefas
 * Buscar tarefa por ID
 * Atualizar tarefa
@@ -40,36 +31,92 @@ API REST profissional para gerenciamento de tarefas, construída com **Java 21**
 
 ---
 
-## 📁 Estrutura principal do Projeto
+##  Estrutura principal do Projeto
 
 ```
-src/main/java/com/seuprojeto/tasks
-├── controller
-├── service
-├── repository
-├── model
-├── dto
-└── exception
+src
+├── main
+│   ├── java
+│   │   └── com.tarefas
+│   │       ├── controller
+│   │       ├── domain             
+│   │       │   ├── enumeration
+│   │       │   ├── log            
+│   │       │   ├── tarefa         
+│   │       │   └── user           
+│   │       ├── dto                
+│   │       ├── infra              
+│   │       │   ├── exception      
+│   │       │   └── security       
+│   │       ├── mapper             
+│   │       ├── repository         
+│   │       ├── services           
+│   │       ├── util               
+│   │       └── TarefasApplication 
+│   └── resources
+│
+├── test
+│   ├── java
+│   │   └── com.tarefas
+│   │       ├── builder            
+│   │       ├── controller         
+│   │       ├── repository         
+│   │       ├── services           
+│   │       ├── utils              
+│   │       └── TarefasApplicationTests
+│   └── resources
+│
+├── target
+├── pom.xml
+└── README.md
+
 ```
 
 ---
 
-## 🗄 Banco de Dados
+## Diagrama de Arquitetura
+
+flowchart TD
+A[Controller] --> B[Service]
+B --> C[Repository]
+C --> D[(Database)]
+
+    B --> E[Domain]
+    E --> E1[Tarefa]
+    E --> E2[User]
+    E --> E3[Log]
+    E --> E4[Enumeration]
+
+    A --> F[DTO]
+    B --> G[Mapper]
+    G --> F
+    G --> E
+
+    A --> H[Infra]
+    H --> H1[Security]
+    H --> H2[Exception Handling]
+
+
+---
+
+##  Banco de Dados
 
 A API utiliza **PostgreSQL**, com criação automática de tabelas via JPA.
 
 Exemplo de configuração:
 
 ```properties
-spring.datasource.url=jdbc:postgresql://localhost:3306/tasksdb
-spring.datasource.username=root
-spring.datasource.password=123456
+spring.datasource.url=jdbc:postgresql://localhost:3306/tasks
+spring.datasource.username=${DB_USER}
+spring.datasource.password=${DB_PASSWORD}
 spring.jpa.hibernate.ddl-auto=update
 ```
+As credenciais para conexão com banco foi realizada através de variáveis de ambiente.
+
 
 ---
 
-## 🧪 Testes
+##  Testes
 
 Testes unitários implementados com:
 
@@ -77,29 +124,8 @@ Testes unitários implementados com:
 * Mockito
 * Spring Boot Test
 
----
 
-## 🐳 Docker
-
-A aplicação possui suporte total ao Docker.
-
-### Docker Compose
-
-```yaml
-version: '3.8'
-services:
-  mysql:
-    image: mysql:8
-    environment:
-      MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: tasksdb
-    ports:
-      - "3306:3306"
-```
-
----
-
-## ▶️ Como Executar
+## Como Executar
 
 Clone o repositório:
 
@@ -115,7 +141,32 @@ mvn spring-boot:run
 
 ---
 
-## 📫 Endpoints Principais
+##  Endpoints Principais
+
+## Para o primeiro acesso, é possível cadastrar um novo usuário através do Endpoint abaixo:
+
+### Cadastrar usuário
+
+```
+POST /api/auth/register
+```
+
+````
+{
+"nome": "String ",
+"email": "String",
+"password": "String",
+"role": "USER"
+}
+````
+
+## Para utilizar os Endpoints abaixo é necessário que se obtenha um token através do Endepoint de login.
+
+### Realizar Login
+
+```
+POST /api/auth/login
+```
 
 ### Criar tarefa
 
@@ -151,20 +202,17 @@ DELETE /api/tasks/{id}
 
 ## 🏗 Futuras Implementações
 
-* Filtros por status
-* Autenticação (JWT)
+* Anexos nas tarefa
 * Logs avançados
 * Testes de integração 100%
 
 ---
 
-## 📜 Licença
 
-Distribuído sob a licença MIT.
 
 ---
 
 ## 👨‍💻 Autor
 
-Projeto desenvolvido por **Alessando Nascimento** e **John Helder** com foco em arquitetura robusta e boas práticas profissionais.
+Projeto desenvolvido por **Alessando Sousa** e **John Helder** com foco em arquitetura robusta e boas práticas profissionais.
  
