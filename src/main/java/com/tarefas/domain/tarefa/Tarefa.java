@@ -23,6 +23,8 @@ public class Tarefa {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String titulo;
+
+    @Column(columnDefinition = "TEXT")
     private String descricao;
 
     @Enumerated(EnumType.STRING)
