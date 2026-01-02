@@ -7,6 +7,7 @@ import com.tarefas.dto.TarefaResponsePutDTO;
 import com.tarefas.dto.TarefaResponseDTO;
 import com.tarefas.services.TarefaService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +27,7 @@ public class TarefaController {
     private TarefaService tarefaService;
 
     @PostMapping
-    public ResponseEntity createTask(@RequestBody TarefaRequestDTO data, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity createTask(@RequestBody @Valid TarefaRequestDTO data, UriComponentsBuilder uriBuilder) {
 
         var newTarefa = this.tarefaService.createTask(data);
         var uri = uriBuilder.path("/api/tarefas/{idTask}").buildAndExpand(newTarefa.id()).toUri();
