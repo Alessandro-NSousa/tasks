@@ -47,11 +47,32 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-
     @GetMapping
-    public Page<UserResponseDTO> getAllUsers(@PageableDefault(sort = {"id"}) Pageable paginacao){
+    public Page<UserResponseDTO> getAllUsers(@PageableDefault(sort = {"nome"}) Pageable paginacao){
 
         return this.userService.getAllUsers(paginacao);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<UserResponseDTO> updateProfile(
+            @RequestBody UpdateUserProfileDTO dto
+    ) {
+        var user = userService.updateProfile(dto);
+        return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/me/password")
+    public ResponseEntity<Void> updatePassword(
+            @RequestBody UpdatePasswordDTO dto
+    ) {
+        userService.updatePassword(dto);
+        return ResponseEntity.noContent().build();
     }
 
 }

@@ -66,16 +66,6 @@ public class UserService {
         return mapper.UserToUserResponseDTO(usuario);
     }
 
-    public User getUsuarioLogado() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String usernameLogado = authentication.getName();
-
-        // Buscar o usuário logado no banco (se necessário)
-        User usuarioLogado = userRepository.findByEmail(usernameLogado);
-
-        return usuarioLogado;
-    }
-
     public void deleteUser(UUID id) {
         var usuario = userRepository.findByIdAndAtivoTrue(id)
                 .orElseThrow(() -> new RuntimeException("Usuário nao encontrado ou já excluído"));
@@ -95,5 +85,62 @@ public class UserService {
 
     public Page<UserResponseDTO> getAllUsers(Pageable paginacao) {
         return userRepository.findAllByAtivoTrue(paginacao).map(mapper::UserToUserResponseDTO);
+    }
+
+    public UserResponseDTO updateProfile(UpdateUserProfileDTO dto) {
+
+        User usuario = getUsuarioLogado();
+
+        if (dto.nome() != null) {
+            usuario.setNome(dto.nome());
+        }
+
+        if (dto.username() != null) {
+            usuario.setEmail(dto.username());
+        }
+
+        userRepository.save(usuario);
+
+        logService.RegistrarLog(new LogRequestDTO(
+                "Usuário atualizou seu perfil",
+                User.class.getSimpleName(),
+                usuario.getId()
+        ));
+
+        return mapper.UserToUserResponseDTO(usuario);
+    }
+
+    public void updatePassword(UpdatePasswordDTO dto) {
+
+        User usuario = getUsuarioLogado();
+
+        if (!passwordEncoder.matches(dto.senhaAtual(), usuario.getPassword())) {
+            throw new RuntimeException("Senha atual inválida.");
+        }
+
+        if (!dto.novaSenha().equals(dto.confirmacaoSenha())) {
+            throw new RuntimeException("Nova senha e confirmação não conferem.");
+        }
+
+        String novaSenhaCriptografada = passwordEncoder.encode(dto.novaSenha());
+        usuario.setPassword(novaSenhaCriptografada);
+
+        userRepository.save(usuario);
+
+        logService.RegistrarLog(new LogRequestDTO(
+                "Usuário alterou sua senha",
+                User.class.getSimpleName(),
+                usuario.getId()
+        ));
+    }
+
+    public User getUsuarioLogado() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String usernameLogado = authentication.getName();
+
+        // Buscar o usuário logado no banco (se necessário)
+        User usuarioLogado = userRepository.findByEmail(usernameLogado);
+
+        return usuarioLogado;
     }
 }

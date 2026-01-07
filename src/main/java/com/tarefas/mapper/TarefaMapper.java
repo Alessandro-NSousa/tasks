@@ -17,7 +17,7 @@ import java.util.UUID;
 nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface TarefaMapper {
 
-    @Mapping(target = "colaborador", source = "usuario.nome")
+    @Mapping(target = "colaborador", source = "usuario")
     TarefaResponseDTO tarefaToTarefaResponseDTO(Tarefa tarefa);
 
     //target = alvo - source = fonte
