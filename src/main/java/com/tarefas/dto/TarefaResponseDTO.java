@@ -13,7 +13,6 @@ public record TarefaResponseDTO(
         String descricao,
         Status status,
         LocalDate criacao,
-        String colaborador) {
-
+        ColaboradorDTO colaborador) {
 
 }
